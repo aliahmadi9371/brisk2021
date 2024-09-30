@@ -1,0 +1,60 @@
+//---------------------------------------------------------------------------
+
+#ifndef ImageH
+#define ImageH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "hyiedefs.hpp"
+#include "hyieutils.hpp"
+#include "iesettings.hpp"
+#include "ieview.hpp"
+#include "iexBitmaps.hpp"
+#include "iexLayers.hpp"
+#include "iexRulers.hpp"
+#include "imageenview.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Graphics.hpp>
+//---------------------------------------------------------------------------
+class TImageShapeForm : public TForm
+{
+__published:	// IDE-managed Components
+	TImage *Image;
+	void __fastcall FormCreate(TObject *Sender);
+
+private:	// User declarations
+public:		// User declarations
+	__fastcall TImageShapeForm(TComponent* Owner);
+
+	void OpenPicture(UnicodeString fileName);
+
+	bool select;
+	bool drag;
+
+	int x_center;
+	int y_center;
+
+	bool tm;
+
+	int x;
+	int y;
+
+	int X1;
+	int Y1;
+
+	int X2;
+	int Y2;
+
+	double r1;
+	double r2;
+
+	bool LeftClick;
+
+    bool paint;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TImageShapeForm *ImageShapeForm;
+//---------------------------------------------------------------------------
+#endif

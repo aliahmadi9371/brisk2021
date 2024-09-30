@@ -1,0 +1,48 @@
+//---------------------------------------------------------------------------
+
+#ifndef SettingFormH
+#define SettingFormH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvGlassButton.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include "CalcEdit.hpp"
+#include "AdvGlowButton.hpp"
+#include "AdvEdit.hpp"
+//---------------------------------------------------------------------------
+class TSettingFrm : public TForm
+{
+__published:	// IDE-managed Components
+	TPanel *Panel_Bot_Off;
+	TTimer *TimeTimer;
+	TPanel *PanelInfo;
+	TPanel *PanelIp;
+	TPanel *PanelDate;
+	TPanel *PanelTime;
+	TAdvGlowButton *pOffBut;
+	TPanel *PanelMode;
+	TAdvGlassButton *DateEditLbl;
+	TAdvGlassButton *BriskModeEditLbl;
+	TAdvGlassButton *TimeEditLbl;
+	TAdvGlassButton *BriskIpLbl;
+	TAdvGlassButton *DateEdit;
+	TAdvGlassButton *BriskModeEdit;
+	TAdvGlassButton *TimeEdit;
+	TAdvGlassButton *BriskIp;
+	void __fastcall pOffButClick(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall TimeTimerTimer(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TSettingFrm(TComponent* Owner);
+
+	bool first;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TSettingFrm *SettingFrm;
+//---------------------------------------------------------------------------
+#endif

@@ -1,0 +1,76 @@
+//---------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "UnikeyCommands.h"
+#include "mainUnit.h"
+#include "globals.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+
+DWORD UniKeyClass::FindDongle()
+{
+	mainForm->LogToFile("UniKeyClass::FindDongle");
+	rt = UniKey_Find(&mHand, &HID, &lP2);
+	if (rt != 0)
+		HID = 0;
+	UnicodeString hid = HID;
+	mainForm->LogToFile("UniKey_Find: hid = " + hid);
+
+	return HID;
+
+}
+//---------------------------------------------------------------------------
+
+void UniKeyClass::OpenDongle(){
+	mainForm->LogToFile("UniKeyClass::OpenDongle");
+    mP1 = 1234;
+	mP2 = 1234;
+	mP3 = 1234;
+	mP4 = 1234;
+	mHardID = HID;
+	rt = UniKey_User_Logon(&mHand, &mP1, &mP2);
+}
+//---------------------------------------------------------------------------
+
+void UniKeyClass::WriteDongle(){
+
+
+}
+//---------------------------------------------------------------------------
+
+int UniKeyClass::ReadDongle(){
+	mainForm->LogToFile("UniKeyClass::ReadDongle");
+	 mP1 = 9;
+	 mP2 = 11;
+	 rt = UniKey_Read_Memory(&mHand, &mP1, &mP2, &tmpBuf[0]);
+	 if(tmpBuf[0] == 1)
+		HaveLicense = true;
+	 else
+		HaveLicense = false;
+
+	 return tmpBuf[1];
+}
+//---------------------------------------------------------------------------
+
+DWORD UniKeyClass::ReadSoftID(){
+	mainForm->LogToFile("UniKeyClass::ReadSoftID");
+
+	SID = 0;
+	rt = UniKey_Read_SoftID(&mHand, &SID);
+    if (rt != 0)
+		SID = 0;
+
+	UnicodeString sid = SID;
+	mainForm->LogToFile("UniKey_Find: sid = " + sid);
+
+	return SID;
+}
+//---------------------------------------------------------------------------
+
+void UniKeyClass::LogOff(){
+	mainForm->LogToFile("UniKeyClass::LogOff");
+	rt = UniKey_Logoff(&mHand);
+}
+

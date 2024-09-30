@@ -1,0 +1,133 @@
+//---------------------------------------------------------------------------
+#ifndef Scan_cmdClassH
+#define Scan_cmdClassH
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.Classes.hpp>
+#include <System.Math.hpp>
+#include <System.SyncObjs.hpp>
+
+#include "UdpDataSendClass.h"
+#include "TcpDataSendClass.h"
+#include "CoordinateClass.h"
+#include "ScanFileCreator.h"
+#include "ipwftp.h"
+//---------------------------------------------------------------------------
+class Scan_cmdClass
+{
+private:
+	//Events Callbacks
+//	void __fastcall FtpConnectionStatusEvent(TObject* Sender, TipwFTPConnectionStatusEventParams *e);
+//	void __fastcall FtpErrorEvent(TObject* Sender, TipwFTPErrorEventParams *e);
+//	void __fastcall FtpStartTransferEvent(TObject* Sender, TipwFTPStartTransferEventParams *e);
+//	void __fastcall FtpTransferEvent(TObject* Sender, TipwFTPTransferEventParams *e);
+//	void __fastcall FtpEndTransferEvent(TObject* Sender, TipwFTPEndTransferEventParams *e);
+	void __fastcall CheckTimerEvent(TObject *Sender);
+
+	void __fastcall SendScanPacket();
+
+	bool ThreadStarted;
+	bool ConnectedToHost;
+//	TipwFTP *ipwFTP;
+
+    //Variables
+	double Resolution;
+	double MaxRange;
+	double X_Range;
+	double Y_Range;
+	double OverScan;
+	int OverScanCount;
+	double Angle;
+	double Center[2];
+	double Speed;
+    int FlyDis;
+
+	bool justSet;
+
+
+	UnicodeString RemoteFileX;
+	UnicodeString RemoteFileY;
+	UnicodeString RemoteUsrName;
+	UnicodeString RemotePasswd;
+	UnicodeString RemoteIp;
+	UnicodeString LocalFileX;
+	UnicodeString LocalFileY;
+	UnicodeString RemotePath;
+
+	TMutex *mutex;
+protected:
+public:
+	__fastcall Scan_cmdClass();
+
+	//Methods
+	void ConfigCalss();
+	void InitClass();
+	void CreateClassObjects();
+//	void FtpUploaderSetting(UnicodeString IP,UnicodeString UserName,UnicodeString PassWord);
+	void GetScanInfoFromUi(int resolution,  double xrange, double yrange, int angle, double centerX, double centerY, double over_scan, double speed, int offset);
+	void Calibration(bool calc);
+	void GetFtpInfo(UnicodeString remote_ip);
+    void SendScanCommand();
+//	void FtpLogin();
+//	void FtpLogOff();
+//	void FtpUploader(UnicodeString RemoteFileName, UnicodeString LocalFileName);
+//	void FtpDownloader();
+
+	void ScanProc(bool set, int Changer);
+
+	int count;
+
+	int Sum;
+	int Delay;
+	bool delay;
+    bool Continues;
+
+	TTimer* checkTimer;
+	UdpDataSendClass* myUdpDataSendClass;
+    TcpDataSendClass* myTcpDataSendClass;
+
+	CoordinateClass* myCoordinateClass;
+	ScanFileCreator* myScanFileCreator;
+	//Setter Functions
+	void SetReolution(double myValue){
+		Resolution = myValue;
+	}
+	void SetMaxRange(double myValue){
+		MaxRange = myValue;
+	}
+//	void SetRange(double myValue){
+//		Range = myValue;
+//	}
+	void SetOver_Scan(double myValue){
+		OverScan = myValue;
+	}
+	void SetAngle(double myValue){
+		Angle = myValue;
+	}
+	void SetThreadStarted(bool myValue){
+		ThreadStarted = myValue;
+	}
+	void SetConnectedToHost(bool myValue){
+		ConnectedToHost = myValue;
+	}
+	//Getter Functions
+	double GetResolution(){
+		return Resolution;
+	}
+	double GetMaxRange(){
+		return MaxRange;
+	}
+//	double GetRange(){
+//		return Range;
+//	}
+	double GetOver_Scan(){
+		return OverScan;
+	}
+	double GetAngle(){
+		return Resolution;
+	}
+	bool SetThreadStarted(){
+		return ThreadStarted;
+	}
+};
+#endif

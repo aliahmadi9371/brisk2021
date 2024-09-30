@@ -1,0 +1,24 @@
+//---------------------------------------------------------------------------
+#ifndef TcpRgbClassH
+#define TcpRgbClassH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+//---------------------------------------------------------------------------
+class TcpRgbClass
+{
+protected:
+	int M;  //main parsed data
+	double Color;
+public:
+	__fastcall TcpRgbClass();
+	~TcpRgbClass();
+	void SetPixel(unsigned char R, unsigned char G, unsigned char B, unsigned char reserve, TRGBTriple *QUAD);
+
+	void SetM(int myM);
+	int GetM();
+
+	void SetColor(unsigned char myColor);
+	unsigned char GetColor();
+};
+//---------------------------------------------------------------------------
+#endif

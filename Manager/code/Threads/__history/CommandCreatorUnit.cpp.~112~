@@ -1,0 +1,558 @@
+//---------------------------------------------------------------------------
+
+#include <System.hpp>
+#pragma hdrstop
+
+#include "CommandCreatorUnit.h"
+#pragma package(smart_init)
+
+#include "mainUnit.h"
+#include "globals.h"
+//---------------------------------------------------------------------------
+
+//   Important: Methods and properties of objects in VCL can only be
+//   used in a method called using Synchronize, for example:
+//
+//      Synchronize(&UpdateCaption);
+//
+//   where UpdateCaption could look like:
+//
+//      void __fastcall CommandCreatorThread::UpdateCaption()
+//      {
+//        Form1->Caption = "Updated in a thread";
+//      }
+//---------------------------------------------------------------------------
+
+__fastcall CommandCreatorThread::CommandCreatorThread(bool CreateSuspended)
+	: TThread(CreateSuspended)
+{
+	thread_started = true;
+	litho_file = false;
+	progress = false;
+	litho_upload = false;
+	UpdateTB = false;
+	force_file = false;
+
+
+
+}
+//---------------------------------------------------------------------------
+void __fastcall CommandCreatorThread::Execute()
+{
+	//---- Place thread code here ----
+	NameThreadForDebugging(System::String(L"CommandCreatorThread"));
+	ConfigThread();
+	CreateObjects();
+
+	while(thread_started){
+		Application->ProcessMessages();
+//		if(litho_file && !progress){
+////			progress = true;
+//			CreateVfile(mainForm->myLithoFrm->LithoConfigFrm->scan_resolution);
+//			progress = true;
+//			litho_file = false;
+//			progress = false;
+//		}
+//		else if(litho_file2  && !progress){
+//			mainForm->myLithoFrm->LithoDesignFrm->myPaintForm->GrayBitmap->SaveToFile("my3.bmp");
+//			CreateVfile(
+//						mainForm->myLithoFrm->LithoConfigFrm->scan_resolution,
+//						mainForm->myLithoFrm->LithoDesignFrm->myPaintForm->GrayBitmap
+//					   );
+//			progress = true;
+//			litho_file2 = false;
+//			progress = false;
+//		}
+//		else if(litho_upload && !progress){
+//			progress = true;
+//			StartLitho();
+//		}
+
+//		if(!myCmdQueue->isEmpty()){
+//			int cmd = myCmdQueue->peek();
+//			myCmdQueue->dequeue();
+//			StartProcess(cmd);
+//		}
+		if(force_file){
+			StartStopFsClick();
+		}
+		else if(scan_command){
+			StartScanClick();
+		}
+		Sleep(20);
+	}
+}
+//---------------------------------------------------------------------------
+
+bool CommandCreatorThread::CreateVfile(int resolution)
+{
+//	mainForm->LogToFile("CommandCreatorThread: CreateVfile: Create Null Vfile");
+//	if(!DirectoryExists(UploadPath + "/litho")){
+//		AnsiString dir = UploadPath + "/litho";
+//		CreateDirectoryA(dir.c_str(),NULL);
+//	}
+//	AnsiString name = UploadPath + "/litho/Vpoints.txt";
+//	ofstream *file;
+//	file = new ofstream(name.c_str(), ios::out);
+//	AnsiString tmp;
+//
+//	for(int i=0; i<resolution; i++){
+//		Application->ProcessMessages();
+//		for(int j=0; j<resolution; j++){
+//			Application->ProcessMessages();
+//			int num = 0;
+//			tmp = IntToStr(num);
+//			file->write(tmp.c_str(), tmp.Length());
+//			if(j < resolution - 1){
+//				tmp = " ";
+//				file->write(tmp.c_str(), tmp.Length());
+//			}
+//			else{
+//				tmp = "\n";
+//				file->write(tmp.c_str(), tmp.Length());
+//			}
+//		}
+//	}
+//	file->close();
+//	mainForm->LogToFile("CommandCreatorThread: CreateVfile: Null Vfile Created");
+}
+//---------------------------------------------------------------------------
+
+bool CommandCreatorThread::CreateVfile(int resolution, TBitmap* bitmap)
+{
+//	mainForm->LogToFile("CommandCreatorThread: CreateVfile: Create bitmap Vfile");
+//	if(!DirectoryExists(UploadPath + "/litho")){
+//		AnsiString dir = UploadPath + "/litho";
+//		CreateDirectoryA(dir.c_str(),NULL);
+//	}
+//	AnsiString name = UploadPath + "/litho/Vpoints.txt";
+//	DeleteFileW(name);
+//	ofstream *file;
+//	file = new ofstream(name.c_str(), ios::out);
+//	AnsiString tmp;
+//
+////	mainForm->LogToFile("pixels = " + IntToStr(bitmap->Width) + " * " + IntToStr(bitmap->Height));
+//
+//	for(int i=0; i<resolution; i++){
+//		ptr2 = (TRGBQuad*)bitmap->ScanLine[i];
+//		for(int j=0; j<resolution ; j++){
+//			int num = 255 - ptr2[j].rgbRed;
+//			num = floor( (( ((double)num/(double)255) * 100 * 83886.07)) + 0.5);
+//			tmp = num;
+//			file->write(tmp.c_str(), tmp.Length());
+//
+//			if(j != resolution - 1){
+//				tmp = " ";
+//				file->write(tmp.c_str(), tmp.Length());
+//			}
+//			else{
+//				tmp = "\n";
+//				file->write(tmp.c_str(), tmp.Length());
+////				mainForm->LogToFile("______________________________ "+ IntToStr(i) +" _____________________________");
+//			}
+//		}
+//	}
+//	file->close();
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartProcess(int cmd)
+{
+	switch(cmd){
+		case 0:{ // approach
+			break;
+		}
+		case 1:{ // scan
+			break;
+		}
+		case 2:{ // stage
+			break;
+		}
+		case 3:{ // retract
+			break;
+		}
+		case 4:{ // dnc
+			break;
+		}
+		case 5:{ // fs
+			break;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::ConfigThread()
+{
+//	StatusFarNear = 0;
+//	StartApproch = false;
+//	FarNear = false;
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::CreateObjects()
+{
+	myScan = new Scan_cmdClass;
+	myApproach = new Approach_cmdClass;
+	myStepper = new Stepper_cmdClass;
+
+	myUdpDataSendClass = new UdpDataSendClass(NULL);
+	mutex = new TMutex(false);
+	myDnc = new Dnc_cmdClass;
+
+	myFs = new Fs_cmdClass;
+	myCmdQueue = new CmdQueueClass;
+
+	myLitho = new Litho_cmdClass;
+
+	myKpfm = new Kpfm_cmdClass;
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartScanClick(/*bool start, bool set, int Changer*/)
+{
+	myResolution = mainForm->myScanPanelForm->Resolution;
+
+	if(ScanCommand.start){
+		if( !(mainForm->Scaning) ){
+			//start
+			mainForm->LogToFile("CommandCreatorThread: scan start");
+			mainForm->Scaning = true;
+			mainForm->GetSecure();
+			myXRange = mainForm->myScanPanelForm->X_Range;
+			myYRange = mainForm->myScanPanelForm->Y_Range;
+			myAngle = mainForm->myScanPanelForm->Angle;
+			myCenter[0] = mainForm->myScanPanelForm->CenterX;
+			myCenter[1] = mainForm->myScanPanelForm->CenterY;
+			myOverScan = mainForm->myScanPanelForm->OverScan;
+			myRemoteIp = mainForm->myUdpThread->ipwUDPPort->RemoteHost;
+			mySpeed = mainForm->myScanPanelForm->Speed;
+
+
+			if(mainForm->AppMode == 3 || mainForm->AppMode == 4)
+				myFlyDis = mainForm->myScanPanelForm->FlyOffset;
+			else
+				myFlyDis = 0;
+
+			myScan->GetScanInfoFromUi(myResolution,myXRange,myYRange,myAngle,myCenter[0],myCenter[1],myOverScan,mySpeed,myFlyDis);
+			myScan->GetFtpInfo(myRemoteIp);
+			mainForm->myTcpThread->tcp_imaging = true;
+			myScan->ScanProc(ScanCommand.set,ScanCommand.Changer);
+		}
+	}
+	else{
+		if(ScanCommand.set){
+			//set scan config
+			mainForm->LogToFile("CommandCreatorThread: scan set");
+			mainForm->Scaning = false;
+			mainForm->GetSecure();
+			mainForm->myTcpThread->tcp_imaging = false;
+			myXRange = mainForm->myScanPanelForm->X_Range;
+			myYRange = mainForm->myScanPanelForm->Y_Range;
+			myAngle = mainForm->myScanPanelForm->Angle;
+			myCenter[0] = mainForm->myScanPanelForm->CenterX;
+			myCenter[1] = mainForm->myScanPanelForm->CenterY;
+			myOverScan = mainForm->myScanPanelForm->OverScan;
+			myRemoteIp = mainForm->myUdpThread->ipwUDPPort->RemoteHost;
+			mySpeed = mainForm->myScanPanelForm->Speed;
+
+
+
+            if(mainForm->AppMode == 3 || mainForm->AppMode == 4)
+				myFlyDis = mainForm->myScanPanelForm->FlyOffset;
+			else
+				myFlyDis = 0;
+
+			myScan->GetScanInfoFromUi(myResolution,myXRange,myYRange,myAngle,myCenter[0],myCenter[1],myOverScan,mySpeed,myFlyDis);
+			myScan->GetFtpInfo(myRemoteIp);
+			myScan->ScanProc(ScanCommand.set,ScanCommand.Changer);
+		}
+		else{
+			//stop imager thread
+			mainForm->LogToFile("CommandCreatorThread: scan stop");
+			mainForm->myImagerThread->finish = true;
+		}
+	}
+	scan_command = false;
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartApprochClick(int mode, bool start, bool set, int StatusFarNear, bool FarNear,int CountFarNear)
+{
+
+//	mainForm->LogToFile("mode  = " + IntToStr(mode));
+//	mainForm->LogToFile("start = " + BoolToStr(start , true));
+//	mainForm->LogToFile("set = " + BoolToStr(set , true));
+//	mainForm->LogToFile("StatusFarNear = " + IntToStr(StatusFarNear));
+//	mainForm->LogToFile("FarNear = " + BoolToStr(FarNear));
+//	mainForm->LogToFile("CountFarNear = " + IntToStr(CountFarNear));
+	if(start && !set){
+		//start approach
+		if( !(mainForm->Approaching) || UpdateTB){
+			mainForm->LogToFile("CommandCreatorThread : Approch start or Ubdate Tb");
+			mainForm->Approaching = true;
+			if(!UpdateTB)
+				mainForm->GetSecure();
+			myApproach->ApproachData(mode,StatusFarNear,FarNear,true,CountFarNear);
+			mainForm->myControlPanelForm->EnableApproachPanel(2);
+			mainForm->myVideoForm->EnableStage(false);
+			mainForm->myDynamicCurvePanelForm->Enabled = false;
+		}
+	}
+	else if(start && set){
+		//modify approach (after approached)
+		if((mainForm->Approached)){ //set after approached
+			mainForm->LogToFile("CommandCreatorThread : set after approached");
+			myApproach->ApproachData(mode,StatusFarNear,FarNear,true,CountFarNear);
+			mainForm->myControlPanelForm->EnableApproachPanel(3);
+			mainForm->myVideoForm->EnableStage(false);
+			mainForm->myDynamicCurvePanelForm->Enabled = false;
+		}
+	}
+	else{
+		//stop approched or stop approching or just set
+		mainForm->LogToFile("CommandCreatorThread : set approach");
+		mainForm->Approaching = false;
+		mainForm->Approached = false;
+		mainForm->GetSecure();
+		myApproach->ApproachData(mode,StatusFarNear,FarNear,false,CountFarNear);
+		mainForm->myControlPanelForm->EnableApproachPanel(1);
+		mainForm->myVideoForm->EnableStage(true);
+		mainForm->myDynamicCurvePanelForm->Enabled = true;
+	}
+}
+//---------------------------------------------------------------------------
+
+int CommandCreatorThread::getTcpPacketLine(int myMode)
+{
+	int ret = -1;
+	switch (myMode) {
+		case 1:{
+			ret = ((int)myResolution) * 3 * 2;
+			break;
+		}
+		case 2:{
+			ret = ((int)myResolution) * 3 * 2;
+			break;
+		}
+	//	case 3:
+	//	case 4:
+	//	case 5:
+	//	case 6:
+	//	case 7:
+	//	case 8:
+	//	case 9:
+		default:{
+			break;
+		}
+	}
+	return ret;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall CommandCreatorThread::SendPacket()
+{
+	mainForm->myUdpThread->SendBytes();
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartStageClick(byte StateM, int StatusMove, int Stop, bool Shift)
+{
+	mainForm->LogToFile("CommandCreatorThread : StartStageClick");
+	myStepper->StepperSide(StateM,StatusMove,Stop,Shift);
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartRetractClick(int Mode, byte StateM, bool Shift)
+{
+	mainForm->LogToFile("CommandCreatorThread : StartRetractClick , Mode = " + IntToStr(Mode));
+	StartApprochClick(1,false,false,0,false,0);
+
+	switch(Mode){
+		case 0:{ //All
+			myStepper->StepperALL(StateM,Shift);
+			break;
+		}
+		case 1:{ //Off
+			myStepper->StepperOFF(StateM,Shift);
+			break;
+		}
+		case 2:{ //A
+			myStepper->StepperA(StateM,Shift);
+			break;
+        }
+		case 3:{ //B
+			myStepper->StepperB(StateM,Shift);
+			break;
+		}
+		case 4:{ //C
+			myStepper->StepperC(StateM,Shift);
+			break;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartRetDownUpClick(int Num, int Status, bool DownUp)
+{
+	mainForm->LogToFile("CommandCreatorThread : StartRetDownUpClick ");
+	StartApprochClick(1,false,false,0,false,0);   //Stop
+	for(int i=0; i<100; i++)
+		Application->ProcessMessages();
+	if (DownUp == true)
+	{
+		mainForm->StageMoving = true;
+		mainForm->GetSecure();
+		StartApprochClick(2,false,false,Status,true,RetractCount(Num));
+		mainForm->StageMoving = false;
+		mainForm->GetSecure();
+	}
+	else
+	{
+		// one step
+		mainForm->StageMoving = true;
+		mainForm->GetSecure();
+		StartApprochClick(2,false,false,Status,true,RetractCount(Num));
+		for(int i=0; i<100; i++)
+			Application->ProcessMessages();
+		Approacching();
+		mainForm->StageMoving = false;
+		mainForm->GetSecure();
+	}
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::Approacching()
+{
+	if (mainForm->myApproachPanelForm->fast_checkbox->Checked){
+		mainForm->LogToFile("CommandCreatorThread : Approacching : fast");
+		StartApprochClick(0,true,false,0,false,0);
+	}
+	else{
+		mainForm->LogToFile("CommandCreatorThread : Approacching : !fast");
+		StartApprochClick(1,true,false,0,false,0);
+	}
+}
+//---------------------------------------------------------------------------
+
+int CommandCreatorThread::RetractCount(int Num)
+{
+	int ValueRe = 0;
+	double Retract = 0;
+
+	TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+	int stateretract = iniFile->ReadInteger("RETRACT_CONFIG", "Ret_StepperStepMicro_Val", 0);
+	int OneStep = iniFile->ReadInteger("RETRACT_CONFIG", "Ret_OneStep_Val", 0);
+	delete iniFile;
+
+	switch (stateretract){
+		case 0:{
+			Retract = 1;
+			break;
+		}
+		case 1:{
+			Retract = 0.5;
+			break;
+		}
+		case 2:{
+			Retract = 0.25;
+			break;
+		}
+		case 3:{
+			Retract = 0.125;
+			break;
+		}
+	}
+
+	switch (Num){
+		case 1:{
+			ValueRe = OneStep;
+			break;
+		}
+		case 10:{
+			ValueRe = (int)((double)180 / (Retract * 100));
+			break;
+		}
+		case 100:{
+			ValueRe = (int)((double)180 / (Retract * 10));
+			break;
+		}
+		case 1000:{
+			ValueRe = (int)((double)180 / (Retract * 1));
+			break;
+        }
+	}
+	return ValueRe;
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartDncClick(bool start)
+{
+	mainForm->LogToFile("CommandCreatorThread : StartDncClick");
+	if(start)
+		mainForm->myTcpThread->tcp_dnc = true;
+	else
+		mainForm->myTcpThread->tcp_dnc = false;
+	myDnc->StartDncProcess(start);
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartStopFsClick(/*bool start, double startx, double starty, int resolution, int delay, int mode, int GOTO, int dz1, int dz2, int u1, int u2, int currentZ, int currentU*/)
+{
+	mainForm->LogToFile("CommandCreatorThread : StartStopFsClick");
+	myFs->StartFsProcess(FsCommand.start, FsCommand.startx, FsCommand.starty, FsCommand.resolution, FsCommand.delay, FsCommand.mode, FsCommand.GOTO, FsCommand.dz1, FsCommand.dz2, FsCommand.u1, FsCommand.u2, FsCommand.currentZ , FsCommand.currentU);
+    force_file = false;
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::StartLitho(int scan_resolution, int scan_speed, int scan_overscan, double scan_x_center, double scan_y_center, double scan_Xrange, double scan_Yrange, int litho_delay, bool litho_startstop, int LastLithoChanger)
+{
+
+//	myLitho->LithoProc( mainForm->myLithoFrm->LithoConfigFrm->scan_resolution,
+//						mainForm->myLithoFrm->LithoConfigFrm->scan_speed,
+//						mainForm->myLithoFrm->LithoConfigFrm->scan_overscan,
+//						mainForm->myLithoFrm->LithoConfigFrm->scan_x_center,
+//						mainForm->myLithoFrm->LithoConfigFrm->scan_y_center,
+//						mainForm->myLithoFrm->LithoConfigFrm->scan_range,
+//						mainForm->myLithoFrm->LithoConfigFrm->litho_delay,
+//						mainForm->myLithoFrm->LithoConfigFrm->litho_startstop,
+//						mainForm->myLithoFrm->LithoConfigFrm->LastLithoChanger
+//					  );
+
+	if(litho_startstop){
+		mainForm->LogToFile("CommandCreatorThread : StartLitho : Start Litho");
+		mainForm->Lithoing = true;
+		mainForm->GetSecure();
+    }
+	else{
+		mainForm->LogToFile("CommandCreatorThread : StartLitho : Stop Litho");
+		mainForm->Lithoing = false;
+		mainForm->GetSecure();
+	}
+
+	myLitho->LithoProc( scan_resolution,
+						scan_speed,
+						scan_overscan,
+						scan_x_center,
+						scan_y_center,
+						scan_Xrange,
+                        scan_Yrange,
+						litho_delay,
+						litho_startstop,
+						LastLithoChanger
+					  );
+}
+//---------------------------------------------------------------------------
+
+void CommandCreatorThread::SendKpfm(int Frequency, int DriveVoltage, byte LIA1OnOff, int LIA1, int Ki, int Kp, int Kd, int Th, int BiasOnOff)
+{
+	mainForm->LogToFile("CommandCreatorThread : SendKpfm");
+	myKpfm->SendKpfm(Frequency, DriveVoltage, LIA1OnOff, LIA1, Ki, Kp, Kd, Th, BiasOnOff);
+}
+//---------------------------------------------------------------------------
+
+
+
+
+
+
+

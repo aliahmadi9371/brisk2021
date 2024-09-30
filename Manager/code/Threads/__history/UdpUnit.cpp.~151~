@@ -1,0 +1,833 @@
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.hpp>
+#pragma hdrstop
+
+#include "UdpUnit.h"
+
+#pragma package(smart_init)
+#pragma link "ipwudpport"
+
+#include "globals.h"
+#include "mainUnit.h"
+//---------------------------------------------------------------------------
+
+//   Important: Methods and properties of objects in VCL can only be
+//   used in a method called using Synchronize, for example:
+//
+//      Synchronize(&UpdateCaption);
+//
+//   where UpdateCaption could look like:
+//
+//      void __fastcall UdpThread::UpdateCaption()
+//      {
+//        Form1->Caption = "Updated in a thread";
+//      }
+//---------------------------------------------------------------------------
+
+__fastcall UdpThread::UdpThread(bool CreateSuspended)
+	: TThread(CreateSuspended)
+{
+	thread_started = true;
+	network = false;
+	record = false;
+	start_record = false;
+	stop_recored = false;
+	osc = false;
+	activated = false;
+	approched = false;
+	fast_approached = false;
+	FastToNormal = false;
+	on_PC = false;
+	SendPcOn = false;
+	FirstStart = true;
+	ConnectionState = true;
+	FirstApproachStep = true;
+	FlyError = false;
+	ErrorScanStop = false;
+
+	FastTimer = NULL;
+	ErrorScanStopTimer = NULL;
+
+
+	mutex = new TMutex(false);
+
+	All_Scale = false;
+
+	Piezo_Z = 0;
+
+	ApproachCounter = 0;
+	tryOnAdapter = 0;
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::CloseThread()
+{
+	mainForm->LogToFile("UdpThread : CloseThread");
+	thread_started = false;
+
+	if(timer){
+		timer->Enabled = false;
+		delete timer;
+	}
+
+	if(on_timer){
+		on_timer->Enabled = false;
+		delete on_timer;
+	}
+
+	if(ipwIPInfo){
+		delete ipwIPInfo;
+	}
+
+	if(ipwUDPPort){
+		ipwUDPPort->AcceptData = false;
+		ipwUDPPort->Active = false;
+		delete ipwUDPPort;
+	}
+
+	if(myUdpDataSendClass){
+		delete myUdpDataSendClass;
+	}
+
+	if(FastTimer){
+		delete FastTimer;
+	}
+
+	if(ErrorScanStopTimer){
+        delete ErrorScanStopTimer;
+	}
+
+
+	if(ReconnectTimer){
+		delete ReconnectTimer;
+	}
+
+	if(TBUpdateTimer){
+		delete TBUpdateTimer;
+	}
+
+	this->Terminate();
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::ConfigThread()
+{
+//	mainForm->LogToFile("UdpThread : ConfigThread");
+
+	srcPort = UdpTable.local_port;
+	dntPort = UdpTable.remote_port;
+
+	All_Scale = OscChartTable.all_scale;
+
+	myHandShake = UdpTable.server;
+	pcHandShake = UdpTable.system;
+	connection_try = UdpTable.connection_try;
+	osc = ApplicationTable.osc;
+	Last_ip = HardwareTable.last_IP;
+
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::CreateObjects()
+{
+	mainForm->LogToFile("UdpThread : CreateObjects");
+	myUdpDataSendClass = new UdpDataSendClass(NULL);
+	ipwUDPPort = new TipwUDPPort(NULL);
+	ipwIPInfo = new TipwIPInfo(NULL);
+	timer = new TTimer(NULL);
+	timer->Enabled = false;
+
+	on_timer = new TTimer(NULL);
+	timer->Enabled = false;
+
+	FastTimer = new TTimer(NULL);
+	FastTimer->Enabled = false;
+
+	ReconnectTimer = new TTimer(NULL);
+	ReconnectTimer->Enabled = false;
+
+	TBUpdateTimer = new TTimer(NULL);
+	TBUpdateTimer->Enabled = false;
+
+	tryCountTimer = new TTimer(NULL);
+	tryCountTimer->Enabled = false;
+
+	ErrorScanStopTimer = new TTimer(NULL);
+	ErrorScanStopTimer->Enabled = false;
+
+
+	Synchronize(&BuffInit);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::BuffInit()
+{
+	data_buffer = new DataCalss[27];
+	for(int i=0; i<27; i++){
+		data_buffer[i].CreateClass(&data_queue[i],mainForm->myOscForm->my_data_set[i].data_index,mainForm->myOscForm->my_data_set[i].data_offset,mainForm->myOscForm->my_data_set[i].data_scale);
+	}
+
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::DataBaseSaveBuffInit()
+{
+	mainForm->LogToFile("UdpThread : DataBaseSaveBuffInit");
+	for(int i=0; i<27; i++){
+		data_buffer[i].CreateClass(&data_queue[i],mainForm->myOscForm->my_data_set[i].data_index,mainForm->myOscForm->my_data_set[i].data_offset,mainForm->myOscForm->my_data_set[i].data_scale);
+	}
+
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::ListenUdp()
+{
+	mainForm->LogToFile("UdpThread : ListenUdp");
+
+	timer->Interval = 500;
+	timer->OnTimer = connectionTimerNotification;
+
+	on_timer->OnTimer = connectionTimerNotification_on;
+	on_timer->Interval = 5000;
+
+	ReconnectTimer->OnTimer = ReconnectTimerCheckConnection;
+	ReconnectTimer->Interval = 500;
+
+	TBUpdateTimer->OnTimer = TBUpdateTimerEvent;
+	TBUpdateTimer->Interval = 2;
+
+	tryCountTimer->OnTimer = tryCountTimerEvent;
+	tryCountTimer->Interval = 100;
+
+	ErrorScanStopTimer->OnTimer = ErrorScanStopTimerEvent;
+	ErrorScanStopTimer->Interval = 1500;
+
+
+
+	if(ipwUDPPort && ipwIPInfo){
+		ipwUDPPort->OnDataIn = ipwUDPDataIn;
+		ipwUDPPort->OnError = UDPPortErrorEvent;
+		ipwUDPPort->LocalHost = "0.0.0.0";
+		ipwUDPPort->LocalPort = srcPort;
+		ipwUDPPort->Config("InBufferSize=95000");
+//		ipwUDPPort->LocalHost = "0.0.0.0";
+//		ipwUDPPort->LocalPort = 1001;
+//		ipwUDPPort->RemoteHost = "192.168.1.25";
+//		ipwUDPPort->RemotePort = 1000;
+		ipwUDPPort->RemotePort = dntPort;
+		ipwUDPPort->AcceptData = true;
+		ipwUDPPort->Active = true;
+		mainForm->LogToFile("FAdapterCount = " + IntToStr(ipwIPInfo->FAdapterCount()));
+		if(ipwIPInfo->FAdapterCount() > 0)
+			ipwIPInfo->AdapterIndex = 0;
+		connection_tryCount = 0;
+
+	}
+
+	if(FirstStart){
+		FirstStart = false;
+		connected_udp = true;
+		ipwUDPPort->RemoteHost =  Last_ip;
+		ipwUDPPort->RemotePort = dntPort;
+		ReconnectTimer->Enabled = true;
+	}
+	else{
+
+		connected_udp = false;
+		timer->Enabled = true;
+	}
+
+	FastTimer->OnTimer = FastTimerNotification;
+
+
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::ReconnectTimerCheckConnection(TObject *Sender)
+{
+	ReconnectTimer->Enabled = false;
+	if(!activated){
+		mainForm->LogToFile("UdpThread::ReconnectTimerCheckConnection : Not Able To Reconnect");
+		ipwUDPPort->AcceptData = false;
+		ipwUDPPort->Active = false;
+		ipwUDPPort->RemoteHost = "";
+		ConnectionState = false;
+		ListenUdp();
+	}
+	else{
+		mainForm->LogToFile("UdpThread::ReconnectTimerCheckConnection : Reconnected");
+
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::Execute()
+{
+	NameThreadForDebugging(System::String(L"UdpThread"));
+	CreateObjects();
+	ConfigThread();
+	ListenUdp();
+	while(thread_started){
+		Application->ProcessMessages();
+		if(LetSendData)
+			SendBytes();
+
+//		if(FlyError && !ErrorScanStop){
+//			ErrorScanStop = true;
+//			mainForm->LogToFile(" While Loop ------------------------------------------") ;
+//			mainForm->LogToFile("***FlyError = " + BoolToStr(FlyError,true));
+//			mainForm->myControlPanelForm->DBAdvGlowButtonScanClick(NULL);
+//			ErrorScanStopTimer->Enabled = true;
+////			ShowMessage("Scan stopped because of harmful fly offset !!!!");
+//
+//		}
+		Sleep(1);
+	}
+
+	//---- Place thread code here ----
+}
+//---------------------------------------------------------------------------
+void __fastcall UdpThread::ErrorScanStopTimerEvent(TObject *Sender)
+{
+	mainForm->LogToFile("UdpThread::ErrorScanStopTimerEvent");
+	ErrorScanStopTimer->Enabled = false;
+    FlyError = false;
+	ErrorScanStop = false;
+}
+//---------------------------------------------------------------------------
+void __fastcall UdpThread::ipwUDPDataIn(TObject *Sender, TipwUDPPortDataInEventParams *e)
+{
+		//udp handshacking
+//
+
+	if( e->Datagram == "afm_system" && !(connected_udp) ){
+//		mainForm->LogToFile(e->Datagram);
+		ipwUDPPort->RemoteHost =  e->SourceAddress;
+		SourceString = e->SourceAddress;
+		Synchronize(&SetSourceAddress);
+
+		ipwUDPPort->RemotePort = dntPort;
+		connected_udp = true;
+		on_timer->Enabled = true;
+		return;
+	}
+
+	//udp real time data for osc
+	if(e->DatagramB.Length == 112 && connected_udp){
+//		mutex->Acquire();
+//		mainForm->LogToFile("e->DatagramB[27] = " + IntToStr(e->DatagramB[27]));
+		if(e->DatagramB[27] == 1){ // brisk on
+			if(!activated){
+				mainForm->LogToFile("UdpThread _ turn on brisk");
+//				LogToFile("UdpThread _ Brisk Ip = " + ipwUDPPort->RemoteHost)
+				activated = true;
+				on_timer->Enabled = false;
+				tryCountTimer->Enabled = false;
+				Synchronize(&StartChartTimer);
+
+                mainForm->myTcpThread->ipwTcpClient->RemoteHost = e->SourceAddress;
+				mainForm->myTcpThread->ipwTcpServer->LocalHost = ipwIPInfo->FAdapterCount();
+			}
+			unsigned char data0 = e->DatagramB[3];
+			unsigned char data1 = e->DatagramB[4];
+			unsigned char data2 = e->DatagramB[5];
+			unsigned char data3 = e->DatagramB[6];
+			UdpTbRef = GetNewData(data0,data1,data2,data3,true);
+			DataParser(e->DatagramB);
+
+			return;
+
+		}
+		else{
+//			if(!SendPcOn){
+			if(!ConnectionState){
+				PowerOn();
+			}
+//				SendPcOn = true;
+//			}
+			return;
+		}
+//		mutex->Release();
+	}
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::SetSourceAddress()
+{
+	mainForm->mySettingForm->BriskIp->Caption = "IP = " + SourceString;
+	HardwareTable.last_IP = SourceString;
+    mainForm->myDataBase->Execute(mainForm->myDataBase->myQuery->Update("HARDWARE_TYPE"));
+//    TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+//	iniFile->WriteString("HARDWARE_TYPE", "last_IP",SourceString);
+//	delete iniFile;
+
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::PowerOn()
+{
+//	mainForm->LogToFile("mainForm->AppMode : " + IntToStr(mainForm->AppMode));
+	SendSettingPacket(mainForm->AppMode,0,1);
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::PowerOff()
+{
+	SendSettingPacket(mainForm->AppMode,0,0);
+//	if(ipwUDPPort->Active)
+//		ipwUDPPort->Active = false;
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::Pairing()
+{
+	ipwUDPPort->Send(myHandShake.BytesOf());
+}
+//---------------------------------------------------------------------------
+void __fastcall UdpThread::connectionTimerNotification(TObject *Sender)
+{
+
+//	connection_tryCount++;
+	if(connected_udp){
+		timer->Enabled = false;
+		tryCountTimer->Enabled = false;
+		return;
+	}
+	if(connection_tryCount >= ipwIPInfo->FAdapterCount())//connection_tryCount >= connection_try)
+	{
+		timer->Enabled = false;
+		tryCountTimer->Enabled = false;
+//		LogToFile("UdpThread _ can not connect to brisk and close app");
+		ShowMessage("Application Can not Connect to the BRISK. Please Check Network or Restart Brisk.");
+		Synchronize(&TurnOff);
+	}
+	else{
+		timer->Enabled = false;
+		tryCountTimer->Enabled = true;
+		connection_tryCount++;
+
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::tryCountTimerEvent(TObject *Sender){
+	tryCountTimer->Enabled = false;
+	if(tryOnAdapter < 5){
+		if(tryOnAdapter == 0 && ipwIPInfo->FAdapterStatus() == "Up" && ipwIPInfo->FAdapterBroadcastAddress() != ""){
+
+			ipwUDPPort->AcceptData = false;
+			ipwUDPPort->Active = false;
+			ipwUDPPort->OnDataIn = ipwUDPDataIn;
+			ipwUDPPort->OnError = UDPPortErrorEvent;
+			ipwUDPPort->LocalHost = ipwIPInfo->FAdapterIPAddress();
+			ipwUDPPort->AcceptData = true;
+			ipwUDPPort->Active = true;
+			ipwUDPPort->RemoteHost = ipwIPInfo->FAdapterBroadcastAddress();
+			mainForm->LogToFile( "UdpThread _ ipwIPInfo : FAdapterIPAddress : " + ipwIPInfo->FAdapterIPAddress() );
+		}
+		if(ipwIPInfo->FAdapterStatus() == "Up" && ipwIPInfo->FAdapterBroadcastAddress() != ""){
+			try{
+				ipwUDPPort->Send(myHandShake.BytesOf());
+				mainForm->LogToFile("UdpThread : try count for index " + IntToStr(ipwIPInfo->AdapterIndex) + " is " + IntToStr(tryOnAdapter));
+			}
+			catch(Exception &exception){
+				ShowMessage("ipwUDPPort->Send Exception " + exception.Message + " _ " + exception.StackTrace);
+			}
+
+			tryOnAdapter++;
+			tryCountTimer->Enabled = true;
+		}
+		else{
+            if(ipwIPInfo->AdapterIndex < ipwIPInfo->FAdapterCount()-1)
+				ipwIPInfo->AdapterIndex++;
+			tryOnAdapter = 0;
+			timer->Enabled = true;
+		}
+
+
+	}
+	else{
+		if(ipwIPInfo->AdapterIndex < ipwIPInfo->FAdapterCount()-1)
+			ipwIPInfo->AdapterIndex++;
+		tryOnAdapter = 0;
+		timer->Enabled = true;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::TurnOff()
+{
+//	mainForm->myOscForm->pOffButClick(NULL);
+	mainForm->LogToFile("UdpThread : TurnOff");
+	mainForm->ExitApp();
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::DataParser(DynamicArray<Byte> myData)
+{
+
+//	if(osc){
+		if(record){
+			if(start_record){
+				if(stop_recored){
+					myRecUnit->StopRecod();
+					record = false;
+					start_record = false;
+					stop_recored = false;
+				}
+				myRecUnit->my_rec_queueClass->enqueue(myData);
+			}
+			else{
+				myRecUnit = new recUnit(true);
+				myRecUnit->Priority = tpNormal;
+				myRecUnit->FreeOnTerminate = true;
+				myRecUnit->Start();
+				while(!(myRecUnit->thread_started))
+					Application->ProcessMessages();
+				start_record = true;
+			}
+		}
+
+
+		mainForm->myOscForm->xx = data_buffer[00].GetNewData(myData[3],myData[4],myData[5],myData[6],true,false,0, 1);		//TB				24bit       //signed
+		mainForm->myOscForm->yy = data_buffer[01].GetNewData( myData[7],myData[8],myData[9],myData[10],true,false,1, 1);	//LR				24bit       //signed
+		mainForm->myOscForm->zz = data_buffer[02].GetNewData( myData[11],myData[12],myData[13],myData[14],true,false,2, 1);	//SUM				24bit       //signed
+
+		data_buffer[03].GetNewData( myData[15],myData[16],myData[17],myData[18],true,false,3, All_Scale);   						//PIETZO_Z_STATE    24bit       //signed
+		data_buffer[04].GetNewData( myData[19],myData[20],myData[21],myData[22],true,false,4, All_Scale);   						//PIETZO_Y_STATE    24bit       //signed
+		data_buffer[05].GetNewData( myData[23],myData[24],myData[25],myData[26],true,false,5, All_Scale);   						//PIETZO_X_STATE    24bit       //signed
+		FastAmp = data_buffer[06].GetNewData(myData[28],myData[29],myData[30],myData[31],false,true,6 , 1);   						//AMP               32bit       //unsigned
+		data_buffer[07].GetNewData( myData[32],myData[33],myData[34],myData[35],true,false,7, 1);   						//PHASE             24bit       //signed
+		data_buffer[ 8].GetNewData( myData[36],myData[37],myData[38],myData[39],true,false,8, 1);                           //CAFM              24bit       //signed
+		data_buffer[ 9].GetNewData( myData[44],myData[45],myData[46],myData[47],false,false,9, 1);                          //KPFM_LIA1_X       32bit       //signed
+		data_buffer[10].GetNewData( myData[48],myData[49],myData[50],myData[51],false,false,10, 1);                         //KPFM_LIA1_Y       32bit       //signed
+		data_buffer[11].GetNewData( myData[52],myData[53],myData[54],myData[55],false,false,11, 1);                         //KPFM_LIA1_AMP     32bit       //signed
+		data_buffer[12].GetNewData( myData[56],myData[57],myData[58],myData[59],false,false,12, 1);                         //KPFM_LIA1_PHASE   32bit       //signed
+		data_buffer[13].GetNewData( myData[60],myData[61],myData[62],myData[63],false,false,13, 1);                         //KPFM_LIA2_X       32bit       //signed
+		data_buffer[14].GetNewData( myData[64],myData[65],myData[66],myData[67],false,false,14, 1);                         //KPFM_LIA2_Y       32bit       //signed
+		data_buffer[15].GetNewData( myData[68],myData[69],myData[70],myData[71],false,false,15, 1);                         //KPFM_LIA2_AMP     32bit       //signed
+		data_buffer[16].GetNewData( myData[72],myData[73],myData[74],myData[75],false,false,16, 1);                         //KPFM_LIA2_PHASE   32bit       //signed
+		data_buffer[17].GetNewData( myData[76],myData[77],myData[78],myData[79],true,false,17, 1);                          //BIAS              24bit       //signed
+		data_buffer[18].GetNewData( myData[80],myData[81],myData[82],myData[83],true,false,18, 1);                          //AUX1_OUPUT        24bit       //signed
+		data_buffer[19].GetNewData( myData[84],myData[85],myData[86],myData[87],true,false,19, 1);                          //AUX2_OUPUT        24bit       //signed
+		data_buffer[20].GetNewData( myData[88],myData[89],myData[90],myData[91],true,false,20, 1);                          //AUX3_OUPUT        24bit       //signed
+		data_buffer[21].GetNewData( myData[92],myData[93],myData[94],myData[95],true,false,21, 1);                          //AUX4_OUPUT        24bit       //signed
+		data_buffer[22].GetNewData( myData[96],myData[97],myData[98],myData[99],true,false,22, 1);                          //AUX1_INPUT        24bit       //signed
+		data_buffer[23].GetNewData( myData[100],myData[101],myData[102],myData[103],true,false,23, 1);                      //AUX2_INPUT        24bit       //signed
+		data_buffer[24].GetNewData( myData[104],myData[105],myData[106],myData[107],true,false,24, 1);                      //AUX3_INPUT        24bit       //signed
+		data_buffer[25].GetNewData( myData[108],myData[109],myData[110],myData[111],true,false,25, 1);                      //AUX4_INPUT        24bit       //signed
+		data_buffer[26].GetNewData( myData[15],myData[16],myData[17],myData[18],true,false,26, All_Scale);                          //Topo    24bit       //signed
+
+		approched = myData[40];
+		fast_approached = myData[41];
+		fs_GoTo_set = myData[43];
+
+
+//		ApproachCounter++;
+
+//		if(ApproachCounter % 20 == 0){
+//			if(approched){
+//				mainForm->LogToFile("UdpThread: SetApproachedState: --------------------- Approached ---------------");
+//			}
+//			else{
+//				mainForm->LogToFile("UdpThread: SetApproachedState: --------------------- Not Approached ---------------");
+//			}
+//		}
+		Piezo_Z = GetNewData( myData[15],myData[16],myData[17],myData[18],true);
+
+
+//		if(mainForm->Scaning && (mainForm->AppMode == 3 || mainForm->AppMode == 4) && !FlyError ){
+//			int ErrorPercent = 90;
+//			if(((Piezo_Z <= ErrorPercent * MIN_VALUE / 100) /*&& (ScanTable.Scan_Offset_val > 0)*/) || ((Piezo_Z >= ErrorPercent * MAX_VALUE / 100)/* && (ScanTable.Scan_Offset_val > 0)*/)){
+//				mainForm->LogToFile("*FlyError = " + BoolToStr(FlyError,true));
+//				FlyError = true;
+//				mainForm->LogToFile("**FlyError = " + BoolToStr(FlyError,true));
+//				mainForm->LogToFile("Piezo_Z = " + IntToStr(Piezo_Z));
+//				mainForm->LogToFile("Min = " + FloatToStr(ErrorPercent * MIN_VALUE / 100));
+//				mainForm->LogToFile("Max = " + FloatToStr(ErrorPercent * MAX_VALUE / 100));
+//
+//
+//
+//			}
+//		}
+
+//		if(TBUpdateCpunter % 50 ==0){
+//			mainForm->LogToFile("Piezo_Z = " + IntToStr(Piezo_Z));
+			if(Piezo_Z > 0){
+//				mainForm->LogToFile("FirstApproachStep");
+				FirstApproachStep = false;
+			}
+//		}
+//		if(TBUpdateCpunter % 3 ==0){
+			if((mainForm->AppMode == 1 || mainForm->AppMode == 5 || mainForm->AppMode == 7) && mainForm->Approaching && Piezo_Z < 0 && !FirstApproachStep){
+//				mainForm->LogToFile("Piezo_Z = " + IntToStr(Piezo_Z));
+				TBUpdateTimer->Enabled = true;
+				FirstApproachStep = true;
+			}
+//		}
+
+
+
+
+		if( (approched) && (!mainForm->Approached)){ //approach
+			Synchronize(&SetApproachedState);
+
+		}
+		else if( (!approched) && (mainForm->Approached)){
+			Synchronize(&SetNotApproachedState);
+		}
+
+		if(fast_approached && (mainForm->myControlPanelForm->fast)){
+//			mainForm->LogToFile("UdpThread : fast_approached = " + BoolToStr(fast_approached,true));
+			mainForm->myControlPanelForm->RadioButtonNormal->Checked = true;
+			mainForm->myControlPanelForm->fast = false;
+			FastToNormal = true;
+
+			FastTimer->Interval = 300;
+			FastStep = 0;
+			FastTimer->Enabled = true;
+		}
+
+//		int counter = 0;
+
+
+
+//	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::TBUpdateTimerEvent(TObject *Sender)
+{
+	mainForm->LogToFile("UdpThread::TBUpdateTimerEvent");
+	TBUpdateTimer->Enabled = false;
+	mainForm->myCommandCreatorThread->UpdateTB = true;
+	mainForm->myCommandCreatorThread->StartApprochClick(1,1,0,0,0,0);
+	mainForm->myCommandCreatorThread->UpdateTB = false;
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::FastTimerNotification(TObject *Sender)
+{
+
+	if(FastStep == 0){
+		mainForm->LogToFile("UdpThread::FastTimerNotification : FastStep = 0");
+		if(mainForm->AppMode == 1 || mainForm->AppMode == 5 || mainForm->AppMode == 7){
+			mainForm->LogToFile("stop dnc approach");
+			mainForm->myDynamicCurvePanelForm->Drive_Val = 0;
+			mainForm->myDynamicCurvePanelForm->start = false;
+			mainForm->myDynamicCurvePanelForm->RunAdvGlassButtonClick(NULL);
+		}
+		mainForm->myApproachPanelForm->fast_checkbox->Checked = false;
+		FastStep++;
+	}
+	else if(FastStep == 1){
+		mainForm->LogToFile("UdpThread::FastTimerNotification : FastStep = 1");
+		FastTimer->Interval = 300;
+		mainForm->LogToFile("stop fast approach");
+		mainForm->myControlPanelForm->AdvBadgeButtonStopApprocheClick(NULL);
+		FastStep++;
+	}
+	else if(FastStep == 2){
+		mainForm->LogToFile("UdpThread::FastTimerNotification : FastStep = 2");
+		mainForm->LogToFile("change to normal approach");
+		SendSettingPacket(mainForm->AppMode,0,1);
+		FastStep++;
+	}
+	else if(FastStep == 3){
+		mainForm->LogToFile("UdpThread::FastTimerNotification : FastStep = 3");
+		FastToNormal = false;
+		mainForm->LogToFile("start normal approach");
+		mainForm->myControlPanelForm->AdvBadgeButtonStartApproachClick(NULL);
+		FastStep = 0;
+		FastTimer->Enabled = false;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::SetApproachedState()
+{
+	mainForm->LogToFile("");
+	mainForm->Approached = true;
+	mainForm->Approaching = false;
+    mainForm->GetSecure();
+	if(mainForm->myApproachPanelForm){
+		mainForm->myApproachPanelForm->AppCheckBox->Checked = true;
+		mainForm->myApproachPanelForm->EditApproachStat->Text = "Approached";
+		mainForm->myMainControlPanelForm->StatusAdvEdit->Caption = "Approached";
+		mainForm->myMainControlPanelForm->StatusAdvEdit->Font->Color = clAqua;
+//		mainForm->myMainControlPanelForm->Timer1->Enabled = false;
+	}
+	if(mainForm->myControlPanelForm )
+		mainForm->myControlPanelForm->EnableApproachPanel(3);
+
+	mainForm->myControlPanelForm->EnableOneStep(true);
+	mainForm->myMovingPanelForm->EnabledMoving(false);
+
+	mainForm->LogToFile("UdpThread: SetApproachedState: Approached ");
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::SetNotApproachedState()
+{
+	mainForm->Approached = false;
+	mainForm->Approaching = false;
+	mainForm->GetSecure();
+	mainForm->myApproachPanelForm->AppCheckBox->Checked = false;
+	mainForm->myApproachPanelForm->EditApproachStat->Text = "Not Approached";
+	mainForm->myMainControlPanelForm->StatusAdvEdit->Caption = "Ready to Approach";
+	mainForm->myMainControlPanelForm->StatusAdvEdit->Font->Color = clHighlight;
+	mainForm->myMainControlPanelForm->Timer1->Enabled = false;
+	mainForm->myControlPanelForm->EnableApproachPanel(1);
+
+	mainForm->myControlPanelForm->EnableOneStep(false);
+	mainForm->myMovingPanelForm->EnabledMoving(true);
+	mainForm->LogToFile("UdpThread: SetNotApproachedState: Not Approached ");
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall UdpThread::SetCrossForm()
+{
+	mainForm->LogToFile("UdpThread::SetCrossForm");
+	mainForm->myOscForm->xx = xx;
+	mainForm->myOscForm->yy = yy;
+	mainForm->myOscForm->zz = zz;
+}
+//---------------------------------------------------------------------------
+
+int UdpThread::GetNewData(unsigned char data0,unsigned char data1,unsigned char data2,unsigned char data3,bool bits)
+{
+	unsigned char tmp1[4] ;
+	int tmp = 0 ;
+	memset(tmp1,0x00,4);
+
+	//32 bits to 24 bits
+	if(bits){
+		tmp1[1] = data0;
+		tmp1[2] = data1;
+		tmp1[3] = data2;
+		memcpy((void *)&tmp , (void *)tmp1 , 4);
+		tmp = tmp >> 8 ;
+	}
+	else{
+		tmp1[0] = data0;
+		tmp1[1] = data1;
+		tmp1[2] = data2;
+		tmp1[3] = data3;
+		memcpy((void *)&tmp , (void *)tmp1 , 4);
+	}
+	return tmp;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::UDPPortErrorEvent(TObject* Sender, TipwUDPPortErrorEventParams *e)
+{
+
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::SendSettingPacket(unsigned char afm_mode ,unsigned char approach_mode,unsigned char power_on_off)
+{
+//	mainForm->LogToFile("UdpThread::SendSettingPacket");
+	DynamicArray<Byte> SettingFrame = myUdpDataSendClass->SettingPacket(afm_mode,approach_mode,power_on_off);
+	SetUdpSendData(SettingFrame);
+	SetSendDataTrue();
+
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::SendApproachPacket(int Refrence, int KI, int KP, int KD, int Bias, int Motor, int Piezo, int KIFeedBack, int Number,int ampdiff, int Start)
+{
+	mainForm->LogToFile("UdpThread::SendApproachPacket");
+	DynamicArray<Byte> ApproachFrame = myUdpDataSendClass->ApproachPacket(Refrence,KI,KP,KD,Bias,Motor, Piezo,KIFeedBack,Number,ampdiff,Start);
+	SetUdpSendData(ApproachFrame);
+	SetSendDataTrue();
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::SendBytes()
+{
+
+	if(ipwUDPPort && connected_udp){
+		mutex->Acquire();
+		ipwUDPPort->Send(SendData);
+		mutex->Release();
+//		mainForm->LogToFile("SendByte");
+	}
+	LetSendData = false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall UdpThread::StartChartTimer()
+{
+	mainForm->ChartTimer->Enabled = true;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall UdpThread::connectionTimerNotification_on(TObject *Sender)
+{
+	SendPcOn = false;
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::SetUdpSendData(DynamicArray<Byte> byts)
+{
+	mutex->Acquire();
+	SendData = byts;
+	mutex->Release();
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::SetSendDataTrue()
+{
+	mutex->Acquire();
+	LetSendData = true;
+	mutex->Release();
+}
+//---------------------------------------------------------------------------
+
+void UdpThread::PacketSendLog(int frame)
+{
+	switch(frame){
+		case AFM_MODE_SETIING:
+			mainForm->LogToFile("UdpThread : AFM_MODE_SETIING");
+			break;
+		case APPROACHE_FRAME:
+			mainForm->LogToFile("UdpThread : APPROACHE_FRAME");
+			break;
+		case SCANNING_FRAME:
+			mainForm->LogToFile("UdpThread : SCANNING_FRAME");
+			break;
+		case COARSE_MOVE_FRAME:
+			mainForm->LogToFile("UdpThread : COARSE_MOVE_FRAME");
+			break;
+		case DNC_FRAME:
+			mainForm->LogToFile("UdpThread : DNC_FRAME");
+			break;
+		case FORCE_SPEC_FRAME:
+			mainForm->LogToFile("UdpThread : FORCE_SPEC_FRAME");
+			break;
+		case KPFM_FRAME:
+			mainForm->LogToFile("UdpThread : KPFM_FRAME");
+			break;
+		case CROSS_HAIR_FRAME:
+			mainForm->LogToFile("UdpThread : CROSS_HAIR_FRAME");
+			break;
+		case ISO_STAGE_FRAME:
+			mainForm->LogToFile("UdpThread : ISO_STAGE_FRAME");
+			break;
+		case LITHO_FRAME:
+			mainForm->LogToFile("UdpThread : LITHO_FRAME");
+			break;
+	}
+}
+//---------------------------------------------------------------------------
+
+

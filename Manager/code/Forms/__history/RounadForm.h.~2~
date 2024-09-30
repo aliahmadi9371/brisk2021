@@ -1,0 +1,39 @@
+//---------------------------------------------------------------------------
+
+#ifndef RounadFormH
+#define RounadFormH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+//---------------------------------------------------------------------------
+class TFormRound : public TForm
+{
+__published:	// IDE-managed Components
+	TPanel *PanelRound;
+	TImage *ImageCAnvas;
+	TShape *ShapeRound;
+	TLabel *LabelRound;
+private:	// User declarations
+public:		// User declarations
+	__fastcall TFormRound(TComponent* Owner);
+
+	void CreateCanvas();
+	void CreateCanvas_Add(bool line);
+
+	void CreateCanvas_Full();
+	void Labeled(AnsiString text);
+	void Labeled_Add(AnsiString text);
+	void Labeled_Full(AnsiString text);
+	void AddRect();
+
+	int radius;
+	int width;
+	int height;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TFormRound *FormRound;
+//---------------------------------------------------------------------------
+#endif

@@ -1,0 +1,84 @@
+//---------------------------------------------------------------------------
+
+#ifndef MovingFormH
+#define MovingFormH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include "AdvShapeButton.hpp"
+#include "AdvGlowButton.hpp"
+//---------------------------------------------------------------------------
+class TMvFrm : public TForm
+{
+__published:	// IDE-managed Components
+	TCheckBox *FastCheckBox;
+	TPanel *CoarsePanel;
+	TPanel *StagePanel;
+	TButton *DownButton;
+	TButton *UpButton;
+	TPanel *PanelShape;
+	TImage *ImageTriangle;
+	TDBAdvGlowButton *DBAdvGlowButtonA;
+	TDBAdvGlowButton *DBAdvGlowButtonB;
+	TDBAdvGlowButton *DBAdvGlowButtonC;
+	TDBAdvGlowButton *DBAdvGlowButtonAll;
+	TPanel *PanelRectCoarse;
+	TShape *ShapeRoundRectScan;
+	TLabel *LabelCoarse;
+	TLabel *LabelStage;
+	TDBAdvGlowButton *LeftButton;
+	TDBAdvGlowButton *FrontButton;
+	TDBAdvGlowButton *RightButton;
+	TDBAdvGlowButton *BackButton;
+	TPanel *PanelRectStage;
+	TShape *Shape2;
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall UpButtonMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall UpButtonMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall DownButtonMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall DownButtonMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall DBAdvGlowButtonAClick(TObject *Sender);
+	void __fastcall DBAdvGlowButtonCClick(TObject *Sender);
+	void __fastcall DBAdvGlowButtonBClick(TObject *Sender);
+	void __fastcall DBAdvGlowButtonAllClick(TObject *Sender);
+
+private:	// User declarations
+	void __fastcall StepperRetract();
+public:		// User declarations
+	__fastcall TMvFrm(TComponent* Owner);
+	void EnabledMoving(bool enabled);
+
+	void CheckUnCkeck(bool A, bool B, bool C, bool all, bool fast);
+	byte StateM;
+	bool SShift;
+	int Mode;
+
+	void CreateStepperPanel(int l);
+
+	bool first;
+
+	void LoadPictures();
+
+	TGDIPPicture* StepperPic;
+	TGDIPPicture* StepperPicHover;
+//
+	TGDIPPicture* CenterPic;
+	TGDIPPicture* CenterPicHover;
+
+	bool AStepper;
+	bool BStepper;
+	bool CStepper;
+	bool AllStepper;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TMvFrm *MvFrm;
+//---------------------------------------------------------------------------
+#endif

@@ -1,0 +1,15 @@
+//---------------------------------------------------------------------------
+
+#ifndef UnikeyCommandsH
+#define UnikeyCommandsH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Data.FMTBcd.hpp>
+#include "UniKey.h"
+//---------------------------------------------------------------------------
+
+
+#endif

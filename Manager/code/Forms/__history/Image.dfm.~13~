@@ -1,0 +1,71 @@
+object ImageShapeForm: TImageShapeForm
+  Left = 0
+  Top = 0
+  BorderStyle = bsNone
+  Caption = 'ImageShapeForm'
+  ClientHeight = 338
+  ClientWidth = 651
+  Color = 6374456
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Image: TImage
+    Left = 0
+    Top = 13
+    Width = 651
+    Height = 325
+    Align = alClient
+    Center = True
+    Stretch = True
+    OnDblClick = ImageDblClick
+    ExplicitLeft = 272
+    ExplicitTop = 120
+    ExplicitWidth = 105
+    ExplicitHeight = 105
+  end
+  object LabelName: TLabel
+    Left = 0
+    Top = 0
+    Width = 651
+    Height = 13
+    Align = alTop
+    Alignment = taCenter
+    Caption = 'LabelName'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWhite
+    Font.Height = -11
+    Font.Name = 'Segoe UI'
+    Font.Style = [fsBold]
+    ParentFont = False
+    ExplicitWidth = 59
+  end
+  object NotFoundPanel: TPanel
+    Left = 0
+    Top = 13
+    Width = 651
+    Height = 325
+    Align = alClient
+    BevelEdges = []
+    BevelOuter = bvNone
+    Caption = '.bmp Not Found'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clRed
+    Font.Height = -11
+    Font.Name = 'Tahoma'
+    Font.Style = [fsBold]
+    ParentFont = False
+    TabOrder = 0
+    Visible = False
+    ExplicitLeft = 248
+    ExplicitTop = 136
+    ExplicitWidth = 169
+    ExplicitHeight = 57
+  end
+end

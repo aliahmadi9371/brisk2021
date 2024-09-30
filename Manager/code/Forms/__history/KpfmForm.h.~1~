@@ -1,0 +1,30 @@
+//---------------------------------------------------------------------------
+
+#ifndef KpfmFormH
+#define KpfmFormH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvPanel.hpp"
+#include <Vcl.ExtCtrls.hpp>
+//---------------------------------------------------------------------------
+class TKpfmFrm : public TForm
+{
+__published:	// IDE-managed Components
+	TAdvPanel *PanelSubKpfm;
+	TPanel *PanelLabelKpfm;
+	TLabel *LabelKpfm;
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TKpfmFrm(TComponent* Owner);
+
+    bool first;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TKpfmFrm *KpfmFrm;
+//---------------------------------------------------------------------------
+#endif

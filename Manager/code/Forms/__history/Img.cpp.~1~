@@ -1,0 +1,1014 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "ImgClass.h"
+#include "mainUnit.h"
+//---------------------------------------------------------------------------
+#pragma link "AdvLabel"
+#pragma link "VCLTee.TeeTools"
+#pragma link "VCLTee.TeeSeriesBandTool"
+#pragma link "FolderDialog"
+#pragma link "AdvGlowButton"
+#pragma resource "*.dfm"
+TImgForm *ImgForm;
+//---------------------------------------------------------------------------
+__fastcall TImgForm::TImgForm(TComponent* Owner)
+	: TForm(Owner)
+{
+
+}
+//---------------------------------------------------------------------------
+
+void TImgForm::ShowImageNumber()
+{
+//    mainForm->LogToFile("change image");
+	if( mainForm->myImagerThread){
+		switch(IamgeIndex){
+			case 1:{
+				MainImage->Picture = Image1->Picture;
+				break;
+			}
+			case 2:{
+				MainImage->Picture = Image2->Picture;
+				break;
+			}
+			case 3:{
+				MainImage->Picture = Image3->Picture;
+				break;
+			}
+			case 4:{
+				MainImage->Picture = Image4->Picture;
+				break;
+			}
+			case 5:{
+				MainImage->Picture = Image5->Picture;
+				break;
+			}
+			case 6:{
+				MainImage->Picture = Image6->Picture;
+				break;
+			}
+			case 7:{
+				MainImage->Picture = Image7->Picture;
+				break;
+			}
+			case 8:{
+				MainImage->Picture = Image8->Picture;
+				break;
+			}
+			case 9:{
+				MainImage->Picture = Image9->Picture;
+				break;
+			}
+			case 10:{
+				MainImage->Picture = Image10->Picture;
+				break;
+			}
+			case 11:{
+				MainImage->Picture = Image11->Picture;
+				break;
+			}
+			case 12:{
+				MainImage->Picture = Image12->Picture;
+				break;
+			}
+			case 13:{
+				MainImage->Picture = Image13->Picture;
+				break;
+			}
+			case 14:{
+				MainImage->Picture = Image14->Picture;
+				break;
+			}
+			case 15:{
+				MainImage->Picture = Image15->Picture;
+				break;
+			}
+			case 16:{
+				MainImage->Picture = Image16->Picture;
+				break;
+			}
+			case 17:{
+				MainImage->Picture = Image17->Picture;
+				break;
+			}
+			case 18:{
+				MainImage->Picture = Image18->Picture;
+				break;
+			case 19:
+				MainImage->Picture = Image19->Picture;
+				break;
+			}
+			case 20:{
+				MainImage->Picture = Image20->Picture;
+				break;
+			}
+			case 21:{
+				MainImage->Picture = Image21->Picture;
+				break;
+			}
+			case 22:{
+				MainImage->Picture = Image22->Picture;
+				break;
+			}
+			case 23:{
+				MainImage->Picture = Image23->Picture;
+				break;
+			}
+			case 24:{
+				MainImage->Picture = Image24->Picture;
+				break;
+			}
+			case 25:{
+				MainImage->Picture = Image25->Picture;
+				break;
+			case 26:
+				MainImage->Picture = Image26->Picture;
+				break;
+			}
+			case 27:{
+				MainImage->Picture = Image27->Picture;
+				break;
+			}
+			case 28:{
+				MainImage->Picture = Image28->Picture;
+				break;
+			}
+			case 29:{
+				MainImage->Picture = Image29->Picture;
+				break;
+			}
+			case 30:{
+				MainImage->Picture = Image30->Picture;
+				break;
+			}
+			case 31:{
+				MainImage->Picture = Image31->Picture;
+				break;
+			}
+			case 32:{
+				MainImage->Picture = Image32->Picture;
+				break;
+			}
+			case 33:{
+				MainImage->Picture = Image33->Picture;
+				break;
+			}
+			case 34:{
+				MainImage->Picture = Image34->Picture;
+				break;
+			}
+			default:{
+				break;
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::FormCreate(TObject *Sender)
+{
+	this->Hide();
+
+	fisrt = false;
+
+    IamgeIndex = 1;
+	LastIamgeIndex = 0;
+	ChartImage = true;
+
+	ImgPanel->Caption = "";
+	CenterPanel->Caption = "";
+
+	ImageNameAdvLabel->Caption = PIC0_FF;
+
+	Timer1->Enabled = false;
+	ChartTool2->Active = false;
+	ChartTool1->Active = false;
+
+	ScrollBox1->Width = mainForm->ptz_sub_pnl->Width;
+
+	ImageCanvasDraw = false;
+	PaintBox1->Canvas->Pen->Width = 2;
+	PaintBox1->Canvas->Pen->Color = clWhite;
+	PaintBox1->Canvas->Pen->Style = psSolid;
+
+
+	TopoChart->ScrollMouseButton = mbRight;
+	TopoChart->ClipPoints = false;
+	TopoChart->Title->Visible = false;
+	TopoChart ->Legend->Visible = false;
+	TopoChart->LeftAxis->Automatic = true;
+	TopoChart->LeftAxis->Axis->Width = 1;
+	TopoChart->BottomAxis->Axis->Width = 1;
+	TopoChart->BottomAxis->RoundFirstLabel = false;
+	TopoChart->BottomAxis->Automatic = false;
+	TopoChart->View3D = false;
+	TopoChart->Axes->FastCalc = true;
+	TopoChart->AutoRepaint = true;
+	TopoChart->Canvas->ReferenceCanvas->Pen->OwnerCriticalSection = NULL;
+	TopoChart->Hover->Visible = false;
+	TopoFWSeries->LinePen->OwnerCriticalSection = NULL;
+	TopoBWSeries->LinePen->OwnerCriticalSection = NULL;
+
+    Image1->Stretch = true;
+	Image2->Stretch = true;
+	Image3->Stretch = true;
+	Image4->Stretch = true;
+	Image5->Stretch = true;
+	Image6->Stretch = true;
+	Image7->Stretch = true;
+	Image8->Stretch = true;
+	Image9->Stretch = true;
+	Image10->Stretch = true;
+	Image11->Stretch = true;
+	Image12->Stretch = true;
+	Image13->Stretch = true;
+	Image14->Stretch = true;
+	Image15->Stretch = true;
+	Image16->Stretch = true;
+	Image17->Stretch = true;
+	Image18->Stretch = true;
+	Image19->Stretch = true;
+	Image20->Stretch = true;
+	Image21->Stretch = true;
+	Image22->Stretch = true;
+	Image23->Stretch = true;
+	Image24->Stretch = true;
+	Image25->Stretch = true;
+	Image26->Stretch = true;
+	Image27->Stretch = true;
+	Image28->Stretch = true;
+	Image29->Stretch = true;
+	Image30->Stretch = true;
+	Image31->Stretch = true;
+	Image32->Stretch = true;
+	Image33->Stretch = true;
+	Image34->Stretch = true;
+
+
+
+
+	TopoChart->Hide();
+
+}
+//---------------------------------------------------------------------------
+
+
+
+void __fastcall TImgForm::FormShow(TObject *Sender)
+{
+	if(!fisrt){
+		fisrt = true;
+
+
+
+		if(ImgPanel->Width > ImgPanel->Height){
+		CenterPanel->Width = ImgPanel->Height - 20;
+		CenterPanel->Height = CenterPanel->Width;
+		CenterPanel->Top = ImgPanel->Height/2 - CenterPanel->Height/2 + 20;
+		CenterPanel->Left = ImgPanel->Width/2 - CenterPanel->Width/2;
+		}
+		else{
+			CenterPanel->Width = ImgPanel->Width - 20 ;
+			CenterPanel->Height = CenterPanel->Width;
+			CenterPanel->Top = ImgPanel->Height/2 - CenterPanel->Height/2 + 20 - 5;
+			CenterPanel->Left = ImgPanel->Width/2 - CenterPanel->Width/2;
+		}
+
+
+		ImageNameAdvLabel->Top = 5;
+		ImageNameAdvLabel->Left = 0;
+		ImageNameAdvLabel->Height = CenterPanel->Top;
+		ImageNameAdvLabel->Width = ImgPanel->Width;
+
+		PanelImageNames->Height = Panel36->Height;
+
+		ChartButton->Height = 30;
+		ChartButton->Width = 30;
+		ChartButton->Left = 5;
+		ChartButton->Top = ImgPanel->Height - 5 - ChartButton->Height;
+
+
+		mainForm->LogToFile("App Mode : " + IntToStr(mainForm->AppMode));
+		switch(mainForm->AppMode)
+		{
+			case 1:{
+
+				Panel7->Visible = false;
+				Panel8->Visible = false;
+				Panel9->Visible = false;
+				Panel10->Visible = false;
+				Panel11->Visible = false;
+				Panel12->Visible = false;
+				Panel13->Visible = false;
+				Panel14->Visible = false;
+				Panel15->Visible = false;
+				Panel16->Visible = false;
+				Panel17->Visible = false;
+				Panel18->Visible = false;
+				Panel19->Visible = false;
+				Panel20->Visible = false;
+				Panel21->Visible = false;
+				Panel22->Visible = false;
+				Panel23->Visible = false;
+				Panel24->Visible = false;
+				Panel25->Visible = false;
+				Panel26->Visible = false;
+				Panel27->Visible = false;
+				Panel28->Visible = false;
+				Panel29->Visible = false;
+				Panel30->Visible = false;
+				Panel31->Visible = false;
+				Panel32->Visible = false;
+				Panel33->Visible = false;
+				Panel34->Visible = false;
+
+
+				Label1->Caption = PIC0_FF;
+				Label2->Caption = PIC0_BB;
+				Label3->Caption = PIC1_FF;
+				Label4->Caption = PIC1_BB;
+				Label5->Caption = PIC2_FF;
+				Label6->Caption = PIC2_BB;
+
+				Label1->Left = Panel1->Width/2 - Label1->Width/2;
+				Label2->Left = Panel2->Width/2 - Label2->Width/2;
+				Label3->Left = Panel3->Width/2 - Label3->Width/2;
+				Label4->Left = Panel4->Width/2 - Label4->Width/2;
+				Label5->Left = Panel5->Width/2 - Label5->Width/2;
+				Label6->Left = Panel6->Width/2 - Label6->Width/2;
+
+				Label1->Top = 0;
+				Label2->Top = 0;
+				Label3->Top = 0;
+				Label4->Top = 0;
+				Label5->Top = 0;
+				Label6->Top = 0;
+
+				mainForm->LogToFile("contact image");
+				break;
+			}
+			case 2:{
+
+				Panel3->Visible = false;
+				Panel4->Visible = false;
+				Panel5->Visible = false;
+				Panel6->Visible = false;
+				Panel11->Visible = false;
+				Panel12->Visible = false;
+				Panel13->Visible = false;
+				Panel14->Visible = false;
+				Panel15->Visible = false;
+				Panel16->Visible = false;
+				Panel17->Visible = false;
+				Panel18->Visible = false;
+				Panel19->Visible = false;
+				Panel20->Visible = false;
+				Panel21->Visible = false;
+				Panel22->Visible = false;
+				Panel23->Visible = false;
+				Panel24->Visible = false;
+				Panel25->Visible = false;
+				Panel26->Visible = false;
+				Panel27->Visible = false;
+				Panel28->Visible = false;
+				Panel29->Visible = false;
+				Panel30->Visible = false;
+				Panel31->Visible = false;
+				Panel32->Visible = false;
+				Panel33->Visible = false;
+				Panel34->Visible = false;
+
+
+				Panel1->Top = 0;
+				Panel2->Top = Panel1->Top + Panel1->Height;
+				Panel7->Top = Panel2->Top + Panel2->Height;
+				Panel8->Top = Panel7->Top + Panel7->Height;
+				Panel9->Top = Panel8->Top + Panel8->Height;
+				Panel10->Top = Panel9->Top + Panel9->Height;
+
+				Label1->Caption = PIC0_FF;
+				Label2->Caption = PIC0_BB;
+				Label7->Caption = PIC3_FF;
+				Label8->Caption = PIC3_BB;
+				Label9->Caption = PIC4_FF;
+				Label10->Caption = PIC4_BB;
+
+				Label1->Left = Panel1->Width/2 - Label1->Width/2;
+				Label2->Left = Panel2->Width/2 - Label2->Width/2;
+				Label7->Left = Panel7->Width/2 - Label7->Width/2;
+				Label8->Left = Panel8->Width/2 - Label8->Width/2;
+				Label9->Left = Panel9->Width/2 - Label9->Width/2;
+				Label10->Left = Panel10->Width/2 - Label10->Width/2;
+
+				Label1->Top = 0;
+				Label2->Top = 0;
+				Label7->Top = 0;
+				Label8->Top = 0;
+				Label9->Top = 0;
+				Label10->Top = 0;
+
+				mainForm->LogToFile("non contact image");
+
+				break;
+			}
+			case 5:{
+                Panel7->Visible = false;
+				Panel8->Visible = false;
+				Panel9->Visible = false;
+				Panel10->Visible = false;
+				Panel11->Visible = false;
+				Panel12->Visible = false;
+				Panel13->Visible = false;
+				Panel14->Visible = false;
+				Panel15->Visible = false;
+				Panel16->Visible = false;
+				Panel17->Visible = false;
+				Panel18->Visible = false;
+				Panel19->Visible = false;
+				Panel20->Visible = false;
+				Panel21->Visible = false;
+				Panel22->Visible = false;
+				Panel23->Visible = false;
+				Panel24->Visible = false;
+				Panel25->Visible = false;
+				Panel26->Visible = false;
+				Panel27->Visible = false;
+				Panel28->Visible = false;
+				Panel29->Visible = false;
+				Panel30->Visible = false;
+				Panel31->Visible = false;
+				Panel32->Visible = false;
+				Panel33->Visible = false;
+				Panel34->Visible = false;
+
+
+				Label1->Caption = PIC0_FF;
+				Label2->Caption = PIC0_BB;
+				Label3->Caption = PIC1_FF;
+				Label4->Caption = PIC1_BB;
+				Label5->Caption = PIC2_FF;
+				Label6->Caption = PIC2_BB;
+
+				Label1->Left = Panel1->Width/2 - Label1->Width/2;
+				Label2->Left = Panel2->Width/2 - Label2->Width/2;
+				Label3->Left = Panel3->Width/2 - Label3->Width/2;
+				Label4->Left = Panel4->Width/2 - Label4->Width/2;
+				Label5->Left = Panel5->Width/2 - Label5->Width/2;
+				Label6->Left = Panel6->Width/2 - Label6->Width/2;
+
+				Label1->Top = 0;
+				Label2->Top = 0;
+				Label3->Top = 0;
+				Label4->Top = 0;
+				Label5->Top = 0;
+				Label6->Top = 0;
+
+				mainForm->LogToFile("Force image");
+				break;
+			}
+			default:{
+				break;
+			}
+		}
+	}
+
+	Panel1->Height = Panel1->Width;
+	Panel2->Height = Panel1->Width;
+	Panel3->Height = Panel1->Width;
+	Panel4->Height = Panel1->Width;
+	Panel5->Height = Panel1->Width;
+	Panel6->Height = Panel1->Width;
+	Panel7->Height = Panel1->Width;
+	Panel8->Height = Panel1->Width;
+	Panel9->Height = Panel1->Width;
+	Panel10->Height = Panel1->Width;
+	Panel11->Height = Panel1->Width;
+	Panel12->Height = Panel1->Width;
+	Panel13->Height = Panel1->Width;
+	Panel14->Height = Panel1->Width;
+	Panel15->Height = Panel1->Width;
+	Panel16->Height = Panel1->Width;
+	Panel17->Height = Panel1->Width;
+	Panel18->Height = Panel1->Width;
+	Panel19->Height = Panel1->Width;
+	Panel20->Height = Panel1->Width;
+	Panel21->Height = Panel1->Width;
+	Panel22->Height = Panel1->Width;
+	Panel23->Height = Panel1->Width;
+	Panel24->Height = Panel1->Width;
+	Panel25->Height = Panel1->Width;
+	Panel26->Height = Panel1->Width;
+	Panel27->Height = Panel1->Width;
+	Panel28->Height = Panel1->Width;
+	Panel29->Height = Panel1->Width;
+	Panel30->Height = Panel1->Width;
+	Panel31->Height = Panel1->Width;
+	Panel32->Height = Panel1->Width;
+	Panel33->Height = Panel1->Width;
+	Panel34->Height = Panel1->Width;
+
+    PanelImageNames->Top = 0;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TImgForm::Image1DblClick(TObject *Sender)
+{
+	IamgeIndex = 1;
+	ImageNameAdvLabel->Caption = Label1->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image2DblClick(TObject *Sender)
+{
+	IamgeIndex = 2;
+	ImageNameAdvLabel->Caption = Label2->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image3DblClick(TObject *Sender)
+{
+	IamgeIndex = 3;
+	ImageNameAdvLabel->Caption = Label3->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image4DblClick(TObject *Sender)
+{
+	IamgeIndex = 4;
+	ImageNameAdvLabel->Caption = Label4->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image5DblClick(TObject *Sender)
+{
+	IamgeIndex = 5;
+	ImageNameAdvLabel->Caption = Label5->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image6DblClick(TObject *Sender)
+{
+	IamgeIndex = 6;
+	ImageNameAdvLabel->Caption = Label6->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image7DblClick(TObject *Sender)
+{
+	IamgeIndex = 7;
+	ImageNameAdvLabel->Caption = Label7->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image8DblClick(TObject *Sender)
+{
+	IamgeIndex = 8;
+	ImageNameAdvLabel->Caption = Label8->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TImgForm::Image9DblClick(TObject *Sender)
+{
+	IamgeIndex = 9;
+	ImageNameAdvLabel->Caption = Label9->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image10DblClick(TObject *Sender)
+{
+	IamgeIndex = 10;
+	ImageNameAdvLabel->Caption = Label10->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image11DblClick(TObject *Sender)
+{
+	IamgeIndex = 11;
+	ImageNameAdvLabel->Caption = Label11->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image12DblClick(TObject *Sender)
+{
+	IamgeIndex = 12;
+	ImageNameAdvLabel->Caption = Label12->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image13DblClick(TObject *Sender)
+{
+	IamgeIndex = 13;
+	ImageNameAdvLabel->Caption = Label13->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image14DblClick(TObject *Sender)
+{
+	IamgeIndex = 14;
+	ImageNameAdvLabel->Caption = Label14->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image15DblClick(TObject *Sender)
+{
+	IamgeIndex = 15;
+	ImageNameAdvLabel->Caption = Label15->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image16DblClick(TObject *Sender)
+{
+	IamgeIndex = 16;
+	ImageNameAdvLabel->Caption = Label16->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image17DblClick(TObject *Sender)
+{
+	IamgeIndex = 17;
+	ImageNameAdvLabel->Caption = Label17->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image18DblClick(TObject *Sender)
+{
+	IamgeIndex = 18;
+	ImageNameAdvLabel->Caption = Label18->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image19DblClick(TObject *Sender)
+{
+	IamgeIndex = 19;
+	ImageNameAdvLabel->Caption = Label1->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image20DblClick(TObject *Sender)
+{
+	IamgeIndex = 20;
+	ImageNameAdvLabel->Caption = Label20->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image21DblClick(TObject *Sender)
+{
+	IamgeIndex = 21;
+	ImageNameAdvLabel->Caption = Label21->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image22DblClick(TObject *Sender)
+{
+	IamgeIndex = 22;
+	ImageNameAdvLabel->Caption = Label22->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image23DblClick(TObject *Sender)
+{
+	IamgeIndex = 23;
+	ImageNameAdvLabel->Caption = Label23->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image24DblClick(TObject *Sender)
+{
+	IamgeIndex = 24;
+	ImageNameAdvLabel->Caption = Label24->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image25DblClick(TObject *Sender)
+{
+	IamgeIndex = 25;
+	ImageNameAdvLabel->Caption = Label25->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image26DblClick(TObject *Sender)
+{
+	IamgeIndex = 26;
+	ImageNameAdvLabel->Caption = Label26->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image27DblClick(TObject *Sender)
+{
+	IamgeIndex = 27;
+	ImageNameAdvLabel->Caption = Label27->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image28DblClick(TObject *Sender)
+{
+	IamgeIndex = 28;
+	ImageNameAdvLabel->Caption = Label28->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image29DblClick(TObject *Sender)
+{
+	IamgeIndex = 29;
+	ImageNameAdvLabel->Caption = Label29->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image30DblClick(TObject *Sender)
+{
+	IamgeIndex = 30;
+	ImageNameAdvLabel->Caption = Label30->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image31DblClick(TObject *Sender)
+{
+	IamgeIndex = 31;
+	ImageNameAdvLabel->Caption = Label31->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image32DblClick(TObject *Sender)
+{
+	IamgeIndex = 32;
+	ImageNameAdvLabel->Caption = Label32->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image33DblClick(TObject *Sender)
+{
+	IamgeIndex = 33;
+	ImageNameAdvLabel->Caption = Label33->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Image34DblClick(TObject *Sender)
+{
+    LastIamgeIndex = IamgeIndex;
+	IamgeIndex = 34;
+	ImageNameAdvLabel->Caption = Label34->Caption;
+	ShowImageNumber();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::ChartButtonClick(TObject *Sender)
+{
+	if(ChartImage && mainForm->Scaning){
+		ShowChart();
+	}
+	else{
+		ShowImages();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::ShowChart()
+{
+    ChartImage = false;
+		ScrollBox1->Hide();
+		ImgPanel->Hide();
+		TopoChart->Show();
+		ChartButton->SetParentComponent(TopoChart);
+		ChartButton->BringToFront();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::ShowImages()
+{
+	ChartImage = true;
+	TopoChart->Hide();
+	ImgPanel->Show();
+	ScrollBox1->Show();
+	ChartButton->SetParentComponent(ImgPanel);
+	ChartButton->BringToFront();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::TopoChartClickBackground(TCustomChart *Sender, TMouseButton Button,
+		  TShiftState Shift, int X, int Y)
+{
+//    mainForm->LogToFile("click back");
+//	if(TopoChart->AutoRepaint){
+		int ValueX = TopoChart->BottomAxis->CalcPosPoint(X);
+		double ValueInterceptFw = InterpolateTopoSeries(ValueX,true);
+		double ValueInterceptBw = InterpolateTopoSeries(ValueX,false);
+//		mainForm->LogToFile(FloatToStr(ValueInterceptFw - ValueInterceptBw));
+
+		ChartTool2->Value = TopoChart->BottomAxis->CalcPosPoint(X);
+		ChartTool1->Text = FloatToStr(ValueInterceptFw - ValueInterceptBw);
+
+		ChartTool2->Active = true;
+		ChartTool1->Active = true;
+
+		Timer1->Enabled = true;
+//	}
+}
+//---------------------------------------------------------------------------
+
+double TImgForm::InterpolateTopoSeries(double XValue, bool fb)
+{
+	int index;
+	double dx,dy;
+	double result;
+
+	if(fb){
+		for(index = 1; index < TopoFWSeries->Count(); index++){
+			if(XValue < TopoFWSeries->XValue[index])
+				break;
+			dx=TopoFWSeries->XValue[index] - TopoFWSeries->XValue[index-1];
+			dy=TopoFWSeries->YValue[index] - TopoFWSeries->YValue[index-1];
+			if(dx != 0){
+				result = dy*(XValue - TopoFWSeries->XValue[index-1])/dx + TopoFWSeries->YValue[index-1];
+			}
+			else
+				result = 0;
+		}
+	}
+	else{
+		for(index = 1; index < TopoBWSeries->Count(); index++){
+			if(XValue < TopoBWSeries->XValue[index])
+				break;
+			dx=TopoBWSeries->XValue[index] - TopoBWSeries->XValue[index-1];
+			dy=TopoBWSeries->YValue[index] - TopoBWSeries->YValue[index-1];
+			if(dx != 0){
+				result = dy*(XValue - TopoBWSeries->XValue[index-1])/dx + TopoBWSeries->YValue[index-1];
+			}
+			else
+				result = 0;
+		}
+	}
+
+	return result;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TImgForm::TopoChartClickSeries(TCustomChart *Sender, TChartSeries *Series,
+          int ValueIndex, TMouseButton Button, TShiftState Shift, int X,
+          int Y)
+{
+//	mainForm->LogToFile("click series");
+//	if(TopoChart->AutoRepaint){
+		int ValueX = TopoChart->BottomAxis->CalcPosPoint(X);
+		double ValueInterceptFw = InterpolateTopoSeries(ValueX,true);
+		double ValueInterceptBw = InterpolateTopoSeries(ValueX,false);
+//		mainForm->LogToFile(FloatToStr(ValueInterceptFw - ValueInterceptBw));
+
+		ChartTool2->Value = TopoChart->BottomAxis->CalcPosPoint(X);
+		ChartTool1->Text = FloatToStr(ValueInterceptFw - ValueInterceptBw);
+
+		ChartTool2->Active = true;
+		ChartTool1->Active = true;
+		Timer1->Enabled = true;
+//	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::Timer1Timer(TObject *Sender)
+{
+	Timer1->Enabled = false;
+	ChartTool2->Active = false;
+	ChartTool1->Active = false;
+}
+//---------------------------------------------------------------------------
+
+//void __fastcall TImgForm::SaveButtonClick(TObject *Sender)
+//{
+//	SaveButton->Enabled = false;
+//	TThread::Synchronize(mainForm->myImagerThread,SaveFiles);
+//}
+////---------------------------------------------------------------------------
+//
+//void __fastcall TImgForm::SaveFiles()
+//{
+//	mainForm->myImagerThread->SaveAll(false);
+//}
+////---------------------------------------------------------------------------
+
+
+void __fastcall TImgForm::MainImageMouseDown(TObject *Sender, TMouseButton Button,
+		  TShiftState Shift, int X, int Y)
+{
+//	if(!ImageCanvasDraw){
+//		ImageCanvasDraw = true;
+//
+//		XStart = X;
+//		YStart = Y;
+//	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::MainImageMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+		  int X, int Y)
+{
+//	ImageCanvasDraw = false;
+//	TPoint p[5];
+//	p[0] = TPoint(XStart, YStart);
+//	p[1] = TPoint(XStart, Y);
+//	p[2] = TPoint(X, Y);
+//	p[3] = TPoint(X, YStart);
+//	p[4] = p[0];
+//	PaintBox1->Canvas->Polyline(p, 4);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::MainImageMouseMove(TObject *Sender, TShiftState Shift, int X,
+		  int Y)
+{
+//	if(ImageCanvasDraw){
+////		TRect rect(0,0,myCanvas->Width, myCanvas->Height);
+////		MainImage->Canvas->CopyRect(MainImage->ClientRect, myCanvas->Canvas, rect);
+//		TPoint p[5];
+//		p[0] = TPoint(XStart, YStart);
+//		p[1] = TPoint(XStart, Y);
+//		p[2] = TPoint(X, Y);
+//		p[3] = TPoint(X, YStart);
+//		p[4] = p[0];
+//		PaintBox1->Canvas->Polyline(p, 4);
+//
+//		PaintBox1->Invalidate();
+//	}
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::PaintBox1MouseDown(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+//    if(!ImageCanvasDraw && !mainForm->Scaning){
+//		ImageCanvasDraw = true;
+//
+//		XStart = X;
+//		YStart = Y;
+//	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::PaintBox1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y)
+{
+//	ImageCanvasDraw = false;
+//	TPoint p[5];
+//	p[0] = TPoint(XStart, YStart);
+//	p[1] = TPoint(XStart, Y);
+//	p[2] = TPoint(X, Y);
+//	p[3] = TPoint(X, YStart);
+//	p[4] = p[0];
+//	PaintBox1->Canvas->Polyline(p, 4);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImgForm::PaintBox1MouseMove(TObject *Sender, TShiftState Shift, int X,
+          int Y)
+{
+//	if(ImageCanvasDraw){
+//		TPoint p[5];
+//		p[0] = TPoint(XStart, YStart);
+//		p[1] = TPoint(XStart, Y);
+//		p[2] = TPoint(X, Y);
+//		p[3] = TPoint(X, YStart);
+//		p[4] = p[0];
+//		PaintBox1->Canvas->Polyline(p, 4);
+//		PaintBox1->Invalidate();
+//	}
+}
+//---------------------------------------------------------------------------
+

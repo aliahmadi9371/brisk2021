@@ -1,0 +1,106 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "ControlFrm.h"
+#include "mainUnit.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "AdvBadge"
+#pragma link "AdvEdit"
+#pragma resource "*.dfm"
+TPanelForm *PanelForm;
+//---------------------------------------------------------------------------
+__fastcall TPanelForm::TPanelForm(TComponent* Owner)
+	: TForm(Owner)
+{
+	start = false;
+	approached = false;
+	FarNear = false;
+	StatusFarNear = 0;
+	fast = false;
+	CountFarNear = 0;
+	myUdpDataSendClass = NULL;
+	myUdpDataSendClass = new UdpDataSendClass(NULL);
+	scanning = false;
+}
+//---------------------------------------------------------------------------
+void __fastcall TPanelForm::FormShow(TObject *Sender)
+{
+	if(!start){
+		start = true;
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TPanelForm::AdvBadgeButtonStartApproachClick(TObject *Sender)
+{
+	if(!approaching){
+		AdvBadgeButtonStartApproach->Enabled = false;
+		approaching = true;
+		if(fast_checkbox->Checked){
+			fast = true;
+//			mainForm->RunApproach(0);
+		}
+		else{
+			fast = false;
+//			mainForm->RunApproach(1);
+		}
+//		mainForm->RunApproach(AdvEditApproachMode->Text.ToInt());
+	}
+	else
+		AdvBadgeButtonStartApproach->Enabled = true;
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TPanelForm::AdvBadgeButtonStartScanClick(TObject *Sender)
+{
+	if(!scanning && mainForm->myCommandCreatorThread){
+		scanning = true;
+		StartScan();
+	}
+}
+//---------------------------------------------------------------------------
+
+void TPanelForm::StartScan()
+{
+	mainForm->myCommandCreatorThread->StartScanClick();
+	AdvBadgeButtonStartScan->Enabled = false;
+}
+//---------------------------------------------------------------------------
+void __fastcall TPanelForm::AdvBadgeButtonStopScanClick(TObject *Sender)
+{
+	if(scanning){
+		mainForm->myUdpThread->SendData = myUdpDataSendClass->ScanPacket(0,0,0,0,0,0,0,0,0,0,0,0,0);
+		TThread::Synchronize(mainForm->myUdpThread,SendPacket);
+		for(int i=0; i<100; i++)
+			Application->ProcessMessages();
+		PanelForm->scanning = false;
+
+		PanelForm->Memo2->Lines->Add("Stop Tcp and Imager");
+		PanelForm->Memo2->Lines->Add("deleting Tcp and Imager");
+		mainForm->myTcpThread->StopStartThread(false);
+		for(int i=0; i<10; i++)
+			Application->ProcessMessages();
+		mainForm->myTcpThread->Terminate();
+		mainForm->myTcpThread = NULL;
+
+		AdvBadgeButtonStartScan->Enabled = true;
+
+		mainForm->myImagerThread->StopStartThread(false);
+		for(int i=0; i<10; i++)
+			Application->ProcessMessages();
+		mainForm->myImagerThread->Terminate();
+			mainForm->myImagerThread = NULL;
+	}
+	for(int i=0; i<100; i++)
+		Application->ProcessMessages();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TPanelForm::SendPacket()
+{
+	mainForm->myUdpThread->SendBytes();
+}
+//---------------------------------------------------------------------------
+

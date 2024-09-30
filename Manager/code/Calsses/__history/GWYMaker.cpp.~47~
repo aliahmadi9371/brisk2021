@@ -1,0 +1,389 @@
+//---------------------------------------------------------------------------
+
+#pragma hdrstop
+
+#include "GWYMaker.h"
+#include "mainUnit.h"
+#include "globals.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+
+__fastcall GWYMakerClass::GWYMakerClass()
+{
+	NULLbyte = 0;
+}
+//---------------------------------------------------------------------------void GWYMakerClass::StartSaving(UnicodeString GwyFileAdd)
+{
+	mainForm->LogToFile("GWYMakerClass::StartSaving : GwyFileAdd = " + GwyFileAdd);
+	double Range = ScanTable.Scan_Range_Val * pow10l(-6);
+	int PictureResolution = ScanTable.Scan_Resolution_Val;
+	AnsiString PalletName = "Warpp-mono";
+	ImageCount = mainForm->myImagerThread->Image_Counter;
+
+	file = new ofstream(GwyFileAdd.c_str(), ios::binary);
+	SetTextLine("GWYPGwyContainer");
+	SetSize(true, PictureResolution,PalletName);
+
+	mainForm->LogToFile("GWYMakerClass::StartSaving : Image_Counter  = " + IntToStr(mainForm->myImagerThread->Image_Counter));
+
+	for (int i = 0 ; i < ImageCount ; i++)
+	{
+		mainForm->LogToFile("GWYMakerClass::StartSaving : Index  = " + IntToStr(i));
+//		Application->ProcessMessages();
+		int osc = mainForm->myImagerThread->Images[mainForm->myImagerThread->images_index[i]].osc;
+		mainForm->LogToFile("GWYMakerClass::StartSaving : osc  = " + IntToStr(osc));
+		mainForm->LogToFile(OscTable[osc].unit);
+
+
+
+		SetTitel(i,mainForm->myImagerThread->Images[mainForm->myImagerThread->images_index[i]].ImageName);
+		SetVisible(i,true);
+		SetPallet(i,PalletName);
+		SetDataField(i,PictureResolution);
+		Setxres(PictureResolution);
+		Setyres(PictureResolution);
+		Setxreal(Range);
+		Setyreal(Range);
+		SetXYObjectUnit(11);
+		SetXYUnit("m");
+		SetZObjectUnit(11);
+		SetZUnit(OscTable[osc].unit);
+		SetPixels(PictureResolution);
+		Application->ProcessMessages();
+		SetData(true,i,osc,PictureResolution);
+	}
+	delete file;
+
+	mainForm->LogToFile("GWYMakerClass::StartSaving : finiiiiiiiiish");
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::StartSavingFromGallery(UnicodeString GwyFileAdd, int ImageCount)
+{
+	double Range = mainForm->GalFrm->SaveRange * pow10l(-6);
+	int PictureResolution = mainForm->GalFrm->SaveResolution;
+	AnsiString PalletName = "Warpp-mono";
+	ImageCount = ImageCount;
+
+
+	file = new ofstream(GwyFileAdd.c_str(), ios::binary);
+	SetTextLine("GWYPGwyContainer");
+	SetSize(false ,PictureResolution,PalletName);
+
+	mainForm->LogToFile("GWYMakerClass::StartSavingFromGallery : ImageCount  = " + IntToStr(ImageCount));
+
+	for (int i = 0 ; i < ImageCount ; i++)
+	{
+		mainForm->LogToFile("GWYMakerClass::StartSaving : Index  = " + IntToStr(i));
+//		Application->ProcessMessages();
+//		int osc = mainForm->myImagerThread->Images[mainForm->myImagerThread->images_index[i]].osc;
+//		mainForm->LogToFile("GWYMakerClass::StartSaving : osc  = " + IntToStr(osc));
+//		mainForm->LogToFile(OscTable[osc].unit);
+
+		ReadFromIntFile(true,i ,mainForm->GalFrm->image_address_array[i]->IntAdd);
+
+		SetTitel(i,mainForm->GalFrm->image_address_array[i]->LabelName->Caption);
+		SetVisible(i,true);
+		SetPallet(i,PalletName);
+		SetDataField(i,PictureResolution);
+		Setxres(PictureResolution);
+		Setyres(PictureResolution);
+		Setxreal(Range);
+		Setyreal(Range);
+		SetXYObjectUnit(11);
+		SetXYUnit("m");
+		SetZObjectUnit(11);
+		SetZUnit(mainForm->GalFrm->image_address_array[i]->ZUnit);
+		SetPixels(PictureResolution);
+		Application->ProcessMessages();
+		SetData(false,i,0,PictureResolution);
+	}
+	delete file;
+
+	mainForm->LogToFile("GWYMakerClass::StartSaving : finiiiiiiiiish");
+}
+//---------------------------------------------------------------------------
+void GWYMakerClass::SetTextLine(AnsiString Text)
+{
+	AnsiString TextLine = Text;
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetSize(bool Scan,int Resolution , AnsiString Pallet)
+{
+	int Sum = 0;
+	for (int i = 0; i <  ImageCount ; i++){
+		if(Scan)
+			Sum = Sum + mainForm->myImagerThread->Images[mainForm->myImagerThread->images_index[i]].ImageName.Length();
+		else
+			Sum = Sum + mainForm->GalFrm->image_address_array[i]->LabelName->Caption.Length();
+
+		mainForm->LogToFile("GWYMakerClass::SetSize : Name = " + mainForm->myImagerThread->Images[mainForm->myImagerThread->images_index[i]].ImageName);
+	}
+	int DataSize = ((211 +  (Resolution * Resolution * 8) + Pallet.Length()) *  ImageCount) + Sum;
+	file->write((char *)&DataSize, sizeof(int));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetTitel(int ImageNum,AnsiString title)
+{
+	mainForm->LogToFile(" SetTitel");
+	AnsiString TextLine = "/"+IntToStr(ImageNum)+"/data/title";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "s" + title;
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetVisible(int ImageNum,bool Visible)
+{
+	mainForm->LogToFile(" SetVisible");
+	int vis ;
+	AnsiString VisibleByte;
+
+	if(Visible)
+		vis = 1;
+	else
+		vis = 0;
+
+	VisibleByte = IntToHex(vis,2);
+
+	AnsiString TextLine = "/"+IntToStr(ImageNum)+"/data/visible";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "b";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&vis , 1);
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetPallet(int ImageNum,AnsiString PalletName)
+{
+	mainForm->LogToFile(" SetPallet");
+	AnsiString TextLine = "/"+IntToStr(ImageNum)+"/base/palette";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "s" + PalletName;
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+
+}
+
+//---------------------------------------------------------------------------
+void GWYMakerClass::SetDataField(int ImageNum,int Resolution)
+{
+	mainForm->LogToFile(" SetDataField");
+	int DataFieldSize  = Resolution * Resolution * 8 + 133;
+
+	AnsiString TextLine = "/"+IntToStr(ImageNum)+"/data";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "oGwyDataField";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	file->write((char*)&DataFieldSize , sizeof(DataFieldSize));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::Setxres(int Resolution)
+{
+	mainForm->LogToFile(" Setxres");
+	int Data = Resolution;
+
+	AnsiString TextLine = "xres";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "i";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char *)&Data, sizeof(Data));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::Setyres(int Resolution)
+{
+	mainForm->LogToFile(" Setyres");
+	int Data = Resolution;
+
+	AnsiString TextLine = "yres";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "i";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char *)&Data, sizeof(Data));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::Setxreal(double XReal)
+{
+	mainForm->LogToFile(" Setxreal");
+	double MainData = XReal ;
+
+	AnsiString TextLine = "xreal";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "d";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char *)&MainData, sizeof(double));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::Setyreal(double YReal)
+{
+	mainForm->LogToFile(" Setyreal");
+	double MainData = YReal ;
+
+	AnsiString TextLine = "yreal";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "d";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char *)&MainData, sizeof(double));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetXYObjectUnit(int value)
+{
+	mainForm->LogToFile(" SetXYObjectUnit");
+	int Data = value;
+
+	AnsiString TextLine = "si_unit_xy";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "oGwySIUnit";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	file->write((char *)&Data, sizeof(Data));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetXYUnit(AnsiString unit)
+{
+	mainForm->LogToFile(" SetXYUnit");
+	AnsiString TextLine = "unitstr";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "s" + unit;
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetZObjectUnit(int value)
+{
+	mainForm->LogToFile(" SetZObjectUnit");
+	int Data = value;
+
+	AnsiString TextLine = "si_unit_z";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "oGwySIUnit";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	file->write((char *)&Data, sizeof(Data));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetZUnit(AnsiString unit)
+{
+	mainForm->LogToFile(" SetZUnit");
+	AnsiString TextLine = "unitstr";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "s" + unit;
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+
+}
+//---------------------------------------------------------------------------
+void GWYMakerClass::SetPixels(int Resolution)
+{
+	mainForm->LogToFile(" SetPixels");
+	int Data = Resolution * Resolution;
+//	byte bytes [ sizeof( int ) ] = { 0 };
+//	memcpy( bytes , &Data , sizeof( int ) );
+
+	AnsiString TextLine = "data";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char*)&NULLbyte , 1);
+	TextLine = "D";
+	file->write(TextLine.c_str(), TextLine.Length());
+	file->write((char *)&Data, sizeof(Data));
+
+}
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::SetData(bool Scan,int ImageNum,int osc,int Resolution)
+{
+	mainForm->LogToFile(" SetData");
+
+	if(Scan){
+		for (int Line = 0; Line < Resolution; Line++){
+			for (int Pix = 0; Pix < Resolution; Pix++){
+				double Main = (double)mainForm->myImagerThread->Images[mainForm->myImagerThread->images_index[ImageNum]].Lines[Line].Pixels[Pix].Main * OscTable[osc].index /* pow10l(3*OscTable[osc].scale)*/;
+				file->write((char *)&Main, sizeof(double));
+			}
+		}
+	}
+	else{
+		for (int data = 0; data < Resolution * Resolution; data++){
+			for (int Pix = 0; Pix < Resolution; Pix++){
+				double Main = (double)mainForm->GalFrm->image_address_array[ImageNum]->Main[data] * mainForm->GalFrm->image_address_array[ImageNum]->Scale /* pow10l(3*OscTable[osc].scale)*/;
+				file->write((char *)&Main, sizeof(double));
+			}
+		}
+	}
+
+	mainForm->LogToFile(" End ......");
+
+}
+
+//---------------------------------------------------------------------------
+
+void GWYMakerClass::ReadFromIntFile(bool txt,int ImageNum ,UnicodeString FileAdd)
+{
+//	mainForm->LogToFile("ReadFileClass::ReadFromIntFile");
+	mainForm->LogToFile("FileAdd = " + FileAdd);
+
+	intdata.open(FileAdd.c_str(), std::ios::binary); // opens the file
+
+	intdata.seekg(0, intdata.end);
+	double Length = intdata.tellg();
+	intdata.seekg(0, intdata.beg);
+
+	if(!txt)
+		PictureResolution = sqrt(Length/4);
+
+	unsigned char * buffer = new unsigned char [PictureResolution*4];
+
+	for(int LineNumber = 0; LineNumber<PictureResolution; LineNumber++)
+	{
+		intdata.seekg (LineNumber*PictureResolution*4, intdata.beg);
+		intdata.read(buffer,PictureResolution*4);
+
+		for(int i = 0; i<PictureResolution; i++){
+			mainForm->GalFrm->image_address_array[ImageNum]->Main[(PictureResolution * LineNumber) + i] =  GetNewData(buffer[i*4],buffer[i*4+1],buffer[i*4+2],buffer[i*4+3]);
+		}
+	}
+
+	delete[] buffer;
+	buffer = NULL;
+	intdata.close();
+
+}
+//---------------------------------------------------------------------------

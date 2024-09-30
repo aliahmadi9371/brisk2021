@@ -1,0 +1,19 @@
+//---------------------------------------------------------------------------
+
+#ifndef UdpDataSendClassH
+#define UdpDataSendClassH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+//---------------------------------------------------------------------------
+class UdpDataSendClass
+{
+private:	// User declarations
+public:		// User declarations
+	__fastcall UdpDataSendClass(TComponent* Owner);
+	DynamicArray<Byte> SettingPacket(unsigned char afm_mode ,unsigned char approach_mode,unsigned char power_on_off);
+	DynamicArray<Byte> ApproachPacket(int Refrence, int KI, int KP, int KD, int Bias, int Motor, int Piezo, int KIFeedBack, int Number,int ampdiff, int Start);
+	DynamicArray<Byte> ScanPacket(int Resolation, int RES_CONT, int Delay, int StepSizeX, int StepSizeY, int StartScanX, int StartScanY, unsigned char Start, unsigned char direction, int StartScanXN, int StartScanYN, int overscan_count, int flyDistance);
+	DynamicArray<Byte> CoarseMovePacket(unsigned char All, unsigned int Speed, unsigned int StepNum);
+	DynamicArray<Byte> DncPacket(int From, int Step, int Use, int Drive, int point, int gain, int timeconstant, int rolloff, byte Start, int Ref);
+};
+#endif

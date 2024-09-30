@@ -1,0 +1,89 @@
+//---------------------------------------------------------------------------
+
+#ifndef ApproachFrmH
+#define ApproachFrmH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <IniFiles.hpp>
+#include "AdvEdit.hpp"
+
+#include "RounadForm.h"
+#include <Vcl.ExtCtrls.hpp>
+#include "CalcEdit.hpp"
+//---------------------------------------------------------------------------
+class TApproachPanelForm : public TForm
+{
+__published:	// IDE-managed Components
+	TCheckBox *AppCheckBox;
+	TPanel *PanelSubApproach;
+	TCalcLabel *KiAdvEditLbl;
+	TPanel *Panel1;
+	TPanel *Panel2;
+	TCalcLabel *BiasAdvEditLbl;
+	TPanel *Panel3;
+	TCalcLabel *KdAdvEditLbl;
+	TPanel *Panel4;
+	TCalcLabel *StpAdvEditLbl;
+	TPanel *Panel5;
+	TCalcLabel *KpAdvEditLbl;
+	TPanel *Panel6;
+	TCalcLabel *KiFeedbackAdvEditLbl;
+	TPanel *Panel7;
+	TCalcLabel *RefAdvEditLbl;
+	TPanel *Panel8;
+	TCalcLabel *EditApproachStat;
+	TCalcLabel *LabelApproachStat;
+	TShape *ShapeRoundRectApproach;
+	TCheckBox *fast_checkbox;
+	TEdit *KiAdvEdit;
+	TEdit *KdAdvEdit;
+	TEdit *KpAdvEdit;
+	TEdit *BiasAdvEdit;
+	TEdit *StpAdvEdit;
+	TEdit *KiFeedbackAdvEdit;
+	TEdit *RefAdvEdit;
+
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall KiAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall BiasAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall StpAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall RefAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall KdAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall KpAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall KiFeebackAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+
+
+private:	// User declarations
+	TIniFile *iniFile;
+    void __fastcall SetApproach();
+
+public:		// User declarations
+	__fastcall TApproachPanelForm(TComponent* Owner);
+	void SettApproach();
+
+
+
+	bool first;
+
+	void GetIniToUi();
+
+	int RefrenceApp;
+	int KiApp_Contact;
+	int KiApp_NonContact;
+	int BiasApp;
+	int StpApp;
+	int KdApp;
+	int KpApp;
+	int KiFeedback_Contact;
+	int KiFeedback_NonContact;
+
+	TFormRound* RoundApproachSetting;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TApproachPanelForm *ApproachPanelForm;
+//---------------------------------------------------------------------------
+#endif

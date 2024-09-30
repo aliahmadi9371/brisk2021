@@ -1,0 +1,6 @@
+PngImage_1 RCDATA "Resources\\Images\\OSC_Form\\AddBut.png"
+PngImage_2 RCDATA "Resources\\Images\\OSC_Form\\AddSubBox.png"
+PngImage_3 RCDATA "Resources\\Images\\OSC_Form\\pause.png"
+OSC_paly RCDATA "Resources\\Images\\OSC_Form\\play.png"
+PngImage_5 RCDATA "Resources\\Images\\OSC_Form\\record.png"
+PngImage_6 RCDATA "Resources\\Images\\OSC_Form\\SubBut.png"

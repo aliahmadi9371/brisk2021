@@ -1,0 +1,231 @@
+object PiezoFrm: TPiezoFrm
+  Left = 0
+  Top = 0
+  ParentCustomHint = False
+  Align = alClient
+  BiDiMode = bdLeftToRight
+  BorderStyle = bsNone
+  Caption = 'PiezoFrm'
+  ClientHeight = 363
+  ClientWidth = 96
+  Color = 6374456
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  ParentBiDiMode = False
+  OnCreate = FormCreate
+  PixelsPerInch = 96
+  TextHeight = 13
+  object PiezoChart: TChart
+    Left = 0
+    Top = 0
+    Width = 96
+    Height = 363
+    BackWall.Brush.Gradient.Direction = gdBottomTop
+    BackWall.Brush.Gradient.EndColor = 7951944
+    BackWall.Brush.Gradient.StartColor = 7951944
+    BackWall.Brush.Gradient.Visible = True
+    BackWall.Transparent = False
+    Foot.Font.Color = clBlue
+    Foot.Font.Name = 'Verdana'
+    Gradient.Direction = gdBottomTop
+    Gradient.EndColor = 7951944
+    Gradient.StartColor = 7951944
+    Gradient.Visible = True
+    LeftWall.Color = 14745599
+    Legend.Font.Name = 'Verdana'
+    Legend.Shadow.Transparency = 0
+    Legend.Visible = False
+    RightWall.Color = 14745599
+    Title.Font.Color = clWhite
+    Title.Font.Height = -16
+    Title.Font.Name = 'Segoe UI'
+    Title.Font.Style = [fsBold]
+    Title.Text.Strings = (
+      'TChart')
+    BottomAxis.Automatic = False
+    BottomAxis.AutomaticMaximum = False
+    BottomAxis.AutomaticMinimum = False
+    BottomAxis.Axis.Color = 4210752
+    BottomAxis.Grid.Color = 11119017
+    BottomAxis.LabelsFormat.Font.Color = 6579300
+    BottomAxis.LabelsFormat.Font.Style = [fsBold]
+    BottomAxis.Maximum = 100.000000000000000000
+    BottomAxis.MinorTickLength = 1
+    BottomAxis.MinorTicks.Color = 6579300
+    BottomAxis.TickLength = 10
+    BottomAxis.Ticks.Color = 6579300
+    BottomAxis.TicksInner.Color = 11119017
+    BottomAxis.Title.Font.Color = 6579300
+    BottomAxis.Title.Font.Name = 'Verdana'
+    DepthAxis.Axis.Color = 4210752
+    DepthAxis.Grid.Color = 11119017
+    DepthAxis.LabelsFormat.Font.Name = 'Verdana'
+    DepthAxis.TicksInner.Color = 11119017
+    DepthAxis.Title.Font.Name = 'Verdana'
+    DepthTopAxis.Axis.Color = 4210752
+    DepthTopAxis.Grid.Color = 11119017
+    DepthTopAxis.LabelsFormat.Font.Name = 'Verdana'
+    DepthTopAxis.TicksInner.Color = 11119017
+    DepthTopAxis.Title.Font.Name = 'Verdana'
+    LeftAxis.Automatic = False
+    LeftAxis.AutomaticMaximum = False
+    LeftAxis.AutomaticMinimum = False
+    LeftAxis.Axis.Color = 4210752
+    LeftAxis.Grid.Color = 11119017
+    LeftAxis.LabelsFormat.Font.Color = 6579300
+    LeftAxis.LabelsFormat.Font.Style = [fsBold]
+    LeftAxis.Maximum = 100.000000000000000000
+    LeftAxis.MinorTickLength = 1
+    LeftAxis.MinorTicks.Color = 6579300
+    LeftAxis.TickLength = 10
+    LeftAxis.Ticks.Color = 6579300
+    LeftAxis.TicksInner.Color = 11119017
+    LeftAxis.Title.Font.Color = 6579300
+    LeftAxis.Title.Font.Name = 'Verdana'
+    RightAxis.Axis.Color = 4210752
+    RightAxis.Grid.Color = 11119017
+    RightAxis.LabelsFormat.Font.Name = 'Verdana'
+    RightAxis.TicksInner.Color = 11119017
+    RightAxis.Title.Font.Name = 'Verdana'
+    TopAxis.Axis.Color = 4210752
+    TopAxis.Grid.Color = 11119017
+    TopAxis.LabelsFormat.Font.Name = 'Verdana'
+    TopAxis.TicksInner.Color = 11119017
+    TopAxis.Title.Font.Name = 'Verdana'
+    View3D = False
+    Align = alClient
+    TabOrder = 0
+    ExplicitLeft = -152
+    ExplicitTop = 56
+    ExplicitWidth = 400
+    ExplicitHeight = 250
+    DefaultCanvas = 'TGDIPlusCanvas'
+    ColorPaletteIndex = 13
+    object PiezoSeries: TLinearGauge
+      HoverElement = []
+      Legend.Visible = False
+      Selected.Hover.Visible = False
+      XValues.Name = 'X'
+      XValues.Order = loAscending
+      YValues.Name = 'Y'
+      YValues.Order = loNone
+      Face.Color = 4227327
+      Face.Transparent = True
+      Frame.Brush.Color = 11637123
+      Frame.InnerBrush.Style = bsClear
+      Frame.InnerBrush.BackColor = clRed
+      Frame.InnerBrush.Gradient.EndColor = clRed
+      Frame.MiddleBrush.Style = bsClear
+      Frame.MiddleBrush.BackColor = clYellow
+      Frame.OuterBrush.Style = bsClear
+      Frame.OuterBrush.BackColor = clGreen
+      Frame.OuterBrush.Gradient.EndColor = clGreen
+      Frame.Shadow.Visible = False
+      Frame.Visible = True
+      Frame.Width = 4
+      Horizontal = False
+      Maximum = 100.000000000000000000
+      MaxValueIndicator.Brush.Color = clRed
+      MaxValueIndicator.Draw3D = False
+      MaxValueIndicator.InflateMargins = True
+      MaxValueIndicator.Style = psLeftTriangle
+      MaxValueIndicator.VertSize = 5
+      MaxValueIndicator.Visible = False
+      MaxValueIndicator.GaugeStyle = gpHand
+      MinorTicks.Brush.Color = clNone
+      MinorTicks.HorizSize = 1
+      MinorTicks.InflateMargins = True
+      MinorTicks.Pen.Color = 6579300
+      MinorTicks.Style = psRectangle
+      MinorTicks.VertSize = 1
+      MinorTicks.GaugeStyle = gpMinorTick
+      Ranges = <
+        item
+          Format.Brush.Color = 2017310
+          Format.Brush.Gradient.Direction = gdBottomTop
+          Format.Brush.Gradient.EndColor = clRed
+          Format.Brush.Gradient.MidColor = clYellow
+          Format.Brush.Gradient.StartColor = clLime
+          Format.Brush.Gradient.Visible = True
+          Format.Gradient.Direction = gdBottomTop
+          Format.Gradient.EndColor = clRed
+          Format.Gradient.MidColor = clYellow
+          Format.Gradient.StartColor = clLime
+          Format.Gradient.Visible = True
+          Format.InflateMargins = True
+          Format.Pen.Visible = False
+          Format.Picture.Data = {
+            0954506E67496D61676589504E470D0A1A0A0000000D49484452000000420000
+            003108060000006EE27F870000000473424954080808087C0864880000039349
+            44415478DAED9A5B48145118C7E7CC26546CB969D7BD5014810451683DA4BB33
+            5BD29588A20884A40B542F464451504820F5921052F4905091853D5450485006
+            B633B30B6941D183122444EE1A9AB6A1D29ABA73FA9F0563F3B2AEBBEACCEEEC
+            1F7667E6EC9973BEF39BEF7CDF39C3122EA38808FBF28B22D5DA102D84413F73
+            48D23EC383E028FD6697E5E51910905D9248064406C43820B4529B2806618045
+            ABFEF1F403089676ED410842132164A3660650DA806059AC3988802856E3A91C
+            D78C03C755C223CEEB0144098CA9D5AA7F0C7E9B4D925E6B0EA2D3ED360F50DA
+            AB45DF94D2A0439673A2A0682BC4893B8813C7661C84AA563814E5B26E40B4BB
+            DD792AA52D33DC6D1F170AADB0373575EB0604D34C7B05E2D20504C96BD165BA
+            00F1A3A8C8DA6F32B500C6FCE9A7405B9032D78C2CD6050826BFCB55CC11528F
+            0F3F7D0C687016CFE72FF378BEEA160413569A2760D0ED69EB80904D768FE7ED
+            983F693DF891F20BC225187C658A9B0DF3E1F06EABD7FB72BC0ABA03C184E059
+            8978716EAADA43AA2C45AA7C18AB8E2E41446088E20D18772A790AF40882E3FD
+            89AAE91604529C094BF0F7385D9F4433F7B0CD8E2B2DEB160493DFE95CC7994C
+            1F13B91719A27D76389CB7C8E78B6B09AF6B101118825085E0793A815B0FC21B
+            1EC75B59F7207E161464FF369B5B719A3B89DB3C80B07932FDE81E04935F14CB
+            71A888B73E4FE976AB2CD7A71D885F4EE7825E9E0F20A5CE99A82E826C2BBC61
+            35899CA61908A6B83766AA7AC6AE2855936D3F6540607AB039DF10AB0E5CE0CF
+            DCFEFEC5B98D8D3D690B82095EC1A687757C12B4068BA7C389B49D6A206E0244
+            598CC1ECB149525DDA8388353DB0800AD9BBBA2CA4B97920ED41B065376074C3
+            E8EC31403C77C8F2DE44DB4E29104CD88CD5C2E8925103A1B4CC26CBB70C0302
+            1E518A43CDA8810C0DE5D97CBECF8601D15158B86A302BEBCB7F8594F6225B24
+            F5BE33E54030617A7C87E14BA38AEAB09ADC633810D891BEC08E74D7BF024ACB
+            E11149BDDE4B4D102ED7558EE72F0E5FF3AABAC3AA28AF0C07A2CDE5DA4F78FE
+            C9F0B5391CCEB178BD41C381E8703A570E9A4CAD910B4A3B312D9624DB664A82
+            60429CE8419C9887D33708945B0C0B0299E31D8CDF008FA886479C342C082CAC
+            1EE070089FB3F088EB4606C15EDD9553553DE05094A786051110C5A3D884DDC5
+            1E231F7B8C0F4606B11520EAB9506861F41F3E0C07A24D10D612423E0DFF61D4
+            B020826EB7A58FD2470E49DA69681053ADBFDBB44B41F9BFC4AE000000004945
+            4E44AE426082}
+          Format.Style = psRectangle
+          Format.VertSize = 5
+          Format.GaugeStyle = gpColorLine
+          Format.EndValue = 100.000000000000000000
+          Format.Position = 45
+        end
+        item
+          Format.Brush.Color = 6579300
+          Format.Brush.Gradient.Direction = gdBottomTop
+          Format.Brush.Gradient.EndColor = 6579300
+          Format.Brush.Gradient.StartColor = 2631780
+          Format.Brush.Gradient.Visible = True
+          Format.Gradient.Direction = gdBottomTop
+          Format.Gradient.EndColor = 6579300
+          Format.Gradient.StartColor = 2631780
+          Format.Gradient.Visible = True
+          Format.InflateMargins = True
+          Format.Style = psRectangle
+          Format.VertSize = 5
+          Format.Visible = False
+          Format.GaugeStyle = gpColorLine
+          Format.EndValue = 100.000000000000000000
+          Format.StartValue = 80.000000000000000000
+        end>
+      Ticks.Brush.Style = bsClear
+      Ticks.InflateMargins = True
+      Ticks.Pen.Color = 6579300
+      Ticks.Style = psRectangle
+      Ticks.VertSize = 10
+      Ticks.GaugeStyle = gpTick
+      Value = 50.000000000000000000
+      ValueArea.Color = 7951944
+      ValueArea.Font.Height = -24
+      ValueArea.Shadow.Visible = False
+      ValueArea.Transparent = True
+    end
+  end
+end

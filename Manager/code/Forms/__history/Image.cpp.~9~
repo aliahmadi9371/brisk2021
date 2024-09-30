@@ -1,0 +1,49 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "Image.h"
+#include "mainUnit.h"
+#include "PntForm.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "hyiedefs"
+#pragma link "hyieutils"
+#pragma link "iesettings"
+#pragma link "ieview"
+#pragma link "iexBitmaps"
+#pragma link "iexLayers"
+#pragma link "iexRulers"
+#pragma link "imageenview"
+#pragma resource "*.dfm"
+TImageShapeForm *ImageShapeForm;
+
+#include "GalleryForm.h"
+//---------------------------------------------------------------------------
+__fastcall TImageShapeForm::TImageShapeForm(TComponent* Owner)
+	: TForm(Owner)
+{
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImageShapeForm::FormCreate(TObject *Sender)
+{
+	this->Hide();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TImageShapeForm::ImageDblClick(TObject *Sender)
+{
+	mainForm->myOscForm->p1PauseClick(NULL);
+	mainForm->myVideoForm->VideoGrabber1->StopPreview();
+	GalleyForm->myViewer->current_image_count =  GalleyForm->currentimagecount;
+	GalleyForm->myViewer->current_image_number = image_number;
+	mainForm->Enabled = false;
+
+	GalleyForm->myViewer->Show();
+}
+//---------------------------------------------------------------------------
+
+

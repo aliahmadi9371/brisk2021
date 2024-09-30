@@ -1,0 +1,26 @@
+//---------------------------------------------------------------------------
+
+#ifndef ScanFileCreatorH
+#define ScanFileCreatorH
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.Classes.hpp>
+#include <math.h>
+//---------------------------------------------------------------------------
+class ScanFileCreator
+{
+private:
+public:
+	//functions
+	__fastcall ScanFileCreator();
+	~ScanFileCreator();
+	bool CreateXfile(int start_x, int step_hx, int step_vx, int resolution, int overscan_count);
+	bool CreateYfile(int start_y, int step_hy, int step_vy,int resolution, int overscan_count);
+    int* XFileTcpData;
+	int* YFileTcpData;
+
+	int XLength;
+	int YLength;
+};
+//---------------------------------------------------------------------------
+#endif

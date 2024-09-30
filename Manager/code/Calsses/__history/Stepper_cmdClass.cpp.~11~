@@ -1,0 +1,360 @@
+//---------------------------------------------------------------------------
+#pragma hdrstop
+#include "Stepper_cmdClass.h"
+#pragma package(smart_init)
+
+#include "mainUnit.h"
+//---------------------------------------------------------------------------
+__fastcall Stepper_cmdClass::Stepper_cmdClass()
+{
+	InitClass();
+	CreateClassObjects();
+	ConfigClass();
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::InitClass()
+{
+
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::CreateClassObjects()
+{
+	myUdpDataSendClass = new UdpDataSendClass(NULL);
+	mutex = new TMutex(false);
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::ConfigClass()
+{
+
+
+
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::StepperSide(byte StateM, int StatusMove, int Stop, bool Shift)
+{
+	TIniFile *iniFile = new TIniFile(GetCurrentDir()+ "/config.ini");
+	int State = iniFile->ReadInteger("STAGE_CONFIG", "Stage_StepperStepMicro_Val", 0);
+	int SpeedFast = iniFile->ReadInteger("STAGE_CONFIG", "Stage_StepperSpeed_Val_Fast", 0);
+	int SpeedSlow = iniFile->ReadInteger("STAGE_CONFIG", "Stage_StepperSpeed_Val_Slow", 0);
+	delete iniFile;
+
+	int Speed = 0;
+	if (Shift)
+		Speed = SpeedFast;
+	else
+		Speed = SpeedSlow;
+
+	byte Setting = 0;
+	switch (State){
+		case 0:{
+			Setting = 0;
+			break;
+		}
+		case 1:{
+			Setting = 64;
+			break;
+		}
+		case 2: {
+			Setting = 128;
+			break;
+		}
+		case 3:{
+			Setting = 192;
+			break;
+        }
+	}
+
+	if (StateM == 0)
+		Setting += 0;
+	else
+		Setting += 32;
+
+	if (Stop == 0){
+		if (StatusMove == 0)
+			Setting += 16;
+		else
+			Setting += 8;
+	}
+	else
+		Setting += 0;
+
+
+	mutex->Acquire();
+	mainForm->myUdpThread->SendData = myUdpDataSendClass->CoarseMovePacket(Setting,Speed,0);
+	TThread::Synchronize(mainForm->myUdpThread,SendCoarseMovePacket);
+	mutex->Release();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall Stepper_cmdClass::SendCoarseMovePacket()
+{
+	mainForm->myUdpThread->SendBytes();
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::StepperALL(byte StateM, bool Shift)
+{
+
+	TIniFile *iniFile = new TIniFile(GetCurrentDir()+ "/config.ini");
+	int State = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperStepMicro_Val", 0);
+	int SpeedFast = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Fast", 0);
+	int SpeedSlow = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Slow", 0);
+	delete iniFile;
+
+	int Speed = 0;
+	if (Shift)
+		Speed = SpeedFast;
+	else
+		Speed = SpeedSlow;
+
+	byte Setting = 0;
+	switch (State){
+		case 0:{
+			Setting = 0;
+			break;
+		}
+		case 1:{
+			Setting = 64;
+			break;
+		}
+		case 2:{
+			Setting = 128;
+			break;
+		}
+		case 3:{
+			Setting = 192;
+			break;
+        }
+	}
+
+	if (StateM == 0)
+		Setting += 0;
+	else
+		Setting += 32;
+
+	Setting += 7;
+//	ByteTobit = convert(setting);
+//	satusDir = setting.ToString();
+
+	mutex->Acquire();
+	mainForm->myUdpThread->SendData = myUdpDataSendClass->CoarseMovePacket(Setting,Speed,0);
+	TThread::Synchronize(mainForm->myUdpThread,SendCoarseMovePacket);
+	mutex->Release();
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::StepperOFF(byte StateM, bool Shift)
+{
+
+	TIniFile *iniFile = new TIniFile(GetCurrentDir()+ "/config.ini");
+	int State = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperStepMicro_Val", 0);
+	int SpeedFast = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Fast", 0);
+	int SpeedSlow = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Slow", 0);
+	delete iniFile;
+
+	int Speed = 0;
+	if (Shift)
+		Speed = SpeedFast;
+	else
+		Speed = SpeedSlow;
+
+	byte Setting = 0;
+	switch (State){
+		case 0:{
+			Setting = 0;
+			break;
+		}
+		case 1:{
+			Setting = 64;
+			break;
+		}
+		case 2:{
+			Setting = 128;
+			break;
+		}
+		case 3:{
+			Setting = 192;
+			break;
+        }
+	}
+
+
+	if (StateM == 0)
+		Setting += 0;
+	else
+		Setting += 32;
+
+	Setting += 0;
+
+//	ByteTobit = convert(setting);
+//	satusDir = setting.ToString();
+
+	mutex->Acquire();
+	mainForm->myUdpThread->SendData = myUdpDataSendClass->CoarseMovePacket(Setting,Speed,0);
+	TThread::Synchronize(mainForm->myUdpThread,SendCoarseMovePacket);
+	mutex->Release();
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::StepperA(byte StateM, bool Shift)
+{
+
+	TIniFile *iniFile = new TIniFile(GetCurrentDir()+ "/config.ini");
+	int State = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperStepMicro_Val", 0);
+	int SpeedFast = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Fast", 0);
+	int SpeedSlow = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Slow", 0);
+	delete iniFile;
+
+	int Speed = 0;
+	if (Shift)
+		Speed = SpeedFast;
+	else
+		Speed = SpeedSlow;
+
+	byte Setting = 0;
+	switch (State){
+		case 0:{
+			Setting = 0;
+			break;
+		}
+		case 1:{
+			Setting = 64;
+			break;
+		}
+		case 2:{
+			Setting = 128;
+			break;
+		}
+		case 3:{
+			Setting = 192;
+			break;
+        }
+	}
+
+
+	if (StateM == 0)
+		Setting += 0;
+	else
+		Setting += 32;
+
+	Setting += 1;
+
+//	ByteTobit = convert(setting);
+//	satusDir = setting.ToString();
+
+	mutex->Acquire();
+	mainForm->myUdpThread->SendData = myUdpDataSendClass->CoarseMovePacket(Setting,Speed,0);
+	TThread::Synchronize(mainForm->myUdpThread,SendCoarseMovePacket);
+	mutex->Release();
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::StepperB(byte StateM, bool Shift)
+{
+
+	TIniFile *iniFile = new TIniFile(GetCurrentDir()+ "/config.ini");
+	int State = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperStepMicro_Val", 0);
+	int SpeedFast = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Fast", 0);
+	int SpeedSlow = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Slow", 0);
+	delete iniFile;
+
+	int Speed = 0;
+	if (Shift)
+		Speed = SpeedFast;
+	else
+		Speed = SpeedSlow;
+
+	byte Setting = 0;
+	switch (State){
+		case 0:{
+			Setting = 0;
+			break;
+		}
+		case 1:{
+			Setting = 64;
+			break;
+		}
+		case 2:{
+			Setting = 128;
+			break;
+		}
+		case 3:{
+			Setting = 192;
+			break;
+        }
+	}
+
+
+	if (StateM == 0)
+		Setting += 0;
+	else
+		Setting += 32;
+
+	Setting += 2;
+
+//	ByteTobit = convert(setting);
+//	satusDir = setting.ToString();
+
+	mutex->Acquire();
+	mainForm->myUdpThread->SendData = myUdpDataSendClass->CoarseMovePacket(Setting,Speed,0);
+	TThread::Synchronize(mainForm->myUdpThread,SendCoarseMovePacket);
+	mutex->Release();
+}
+//---------------------------------------------------------------------------
+
+void Stepper_cmdClass::StepperC(byte StateM, bool Shift)
+{
+
+	TIniFile *iniFile = new TIniFile(GetCurrentDir()+ "/config.ini");
+	int State = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperStepMicro_Val", 0);
+	int SpeedFast = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Fast", 0);
+	int SpeedSlow = iniFile->ReadInteger("COARSEMOVE_CONFIG", "Coarse_StepperSpeed_Val_Slow", 0);
+	delete iniFile;
+
+	int Speed = 0;
+	if (Shift)
+		Speed = SpeedFast;
+	else
+		Speed = SpeedSlow;
+
+	byte Setting = 0;
+	switch (State){
+		case 0:{
+			Setting = 0;
+			break;
+		}
+		case 1:{
+			Setting = 64;
+			break;
+		}
+		case 2:{
+			Setting = 128;
+			break;
+		}
+		case 3:{
+			Setting = 192;
+			break;
+		}
+	}
+
+
+	if (StateM == 0)
+		Setting += 0;
+	else
+		Setting += 32;
+
+	Setting += 4;
+
+//	ByteTobit = convert(setting);
+//	satusDir = setting.ToString();
+
+	mutex->Acquire();
+	mainForm->myUdpThread->SendData = myUdpDataSendClass->CoarseMovePacket(Setting,Speed,0);
+	TThread::Synchronize(mainForm->myUdpThread,SendCoarseMovePacket);
+	mutex->Release();
+}
+//---------------------------------------------------------------------------

@@ -1,0 +1,38 @@
+//---------------------------------------------------------------------------
+
+#ifndef Dnc_cmdClassH
+#define Dnc_cmdClassH
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.Classes.hpp>
+#include <System.Math.hpp>
+#include <System.SyncObjs.hpp>
+//---------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------
+class Dnc_cmdClass
+{
+private:
+protected:
+public:
+	__fastcall Dnc_cmdClass();
+	void ConfigCalss();
+	void InitClass();
+	void CreateClassObjects();
+	void GetDataFromUi();
+	void GetDataFromIni();
+	void CalculateParams();
+
+	int Freq_From_Val;
+	int Freq_To_Val;
+	int Freq_Use_Val;
+	int Freq_Drive_Val;
+	int Freq_Points_Val;
+	int Freq_SetPoint_Val;
+	double Freq_TimeCnt_Val;
+
+	double AmpIndex;
+	double AmpOffset;
+	double DrvScale;
+};
+#endif

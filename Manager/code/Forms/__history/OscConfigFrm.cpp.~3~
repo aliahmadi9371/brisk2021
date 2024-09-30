@@ -1,0 +1,141 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "OscConfigFrm.h"
+#include "mainUnit.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "AdvGlassButton"
+#pragma link "CurvyControls"
+#pragma resource "*.dfm"
+
+TOscConfigForm *OscConfigForm;
+//---------------------------------------------------------------------------
+__fastcall TOscConfigForm::TOscConfigForm(TComponent* Owner)
+	: TForm(Owner)
+{
+	first = false;
+}
+//---------------------------------------------------------------------------
+void __fastcall TOscConfigForm::FormShow(TObject *Sender)
+{
+	mainForm->LogToFile("TOscConfigForm::FormShow");
+	if(!first){
+		first = true;
+		int Left = Panel1->Left;
+		int Top = Panel1->Top;
+		int h = Panel1->Height;
+
+
+		Panel2->Left = Left;
+		Top = Top + h;
+		Panel2->Top = Top;
+
+		Panel3->Left = Left;
+		Top = Top + h;
+		Panel3->Top = Top;
+
+		Panel4->Left = Left;
+		Top = Top + h;
+		Panel4->Top = Top;
+
+		Panel5->Left = Left;
+		Top = Top + h;
+		Panel5->Top = Top;
+
+		Panel6->Left = Left;
+		Top = Top + h;
+		Panel6->Top = Top;
+
+		Panel7->Left = Left;
+		Top = Top + h;
+		Panel7->Top = Top;
+
+		Panel8->Left = Left;
+		Top = Top + h;
+		Panel8->Top = Top;
+
+		Panel9->Left = Left;
+		Top = Top + h;
+		Panel9->Top = Top;
+
+		Panel10->Left = Left;
+		Top = Top + h;
+		Panel10->Top = Top;
+
+		Panel11->Left = Left;
+		Top = Top + h;
+		Panel11->Top = Top;
+
+		Panel12->Left = Left;
+		Top = Top + h;
+		Panel12->Top = Top;
+
+		Panel13->Left = Left;
+		Top = Top + h;
+		Panel13->Top = Top;
+
+		Panel14->Left = Left;
+		Top = Top + h;
+		Panel14->Top = Top;
+
+		Panel15->Left = Left;
+		Top = Top + h;
+		Panel15->Top = Top;
+
+		Panel16->Left = Left;
+		Top = Top + h;
+		Panel16->Top = Top;
+
+		Panel17->Left = Left;
+		Top = Top + h;
+		Panel17->Top = Top;
+
+		Panel18->Left = Left;
+		Top = Top + h;
+		Panel18->Top = Top;
+
+		Panel19->Left = Left;
+		Top = Top + h;
+		Panel19->Top = Top;
+
+		Panel20->Left = Left;
+		Top = Top + h;
+		Panel20->Top = Top;
+
+		Panel21->Left = Left;
+		Top = Top + h;
+		Panel21->Top = Top;
+
+		Panel22->Left = Left;
+		Top = Top + h;
+		Panel22->Top = Top;
+
+		Panel23->Left = Left;
+		Top = Top + h;
+		Panel23->Top = Top;
+
+		Panel24->Left = Left;
+		Top = Top + h;
+		Panel24->Top = Top;
+
+		Panel25->Left = Left;
+		Top = Top + h;
+		Panel25->Top = Top;
+
+		Panel26->Left = Left;
+		Top = Top + h;
+		Panel26->Top = Top;
+
+		Panel27->Left = Left;
+		Top = Top + h;
+		Panel27->Top = Top;
+
+		Panel28->Left = Left;
+		Top = Top + h;
+		Panel28->Top = Top;
+	}
+}
+//---------------------------------------------------------------------------

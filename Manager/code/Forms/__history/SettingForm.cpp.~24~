@@ -1,0 +1,194 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "SettingForm.h"
+#include "mainUnit.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "AdvGlassButton"
+#pragma link "CalcEdit"
+#pragma link "AdvGlowButton"
+#pragma link "AdvEdit"
+#pragma link "AdvPanel"
+#pragma resource "*.dfm"
+TSettingFrm *SettingFrm;
+//---------------------------------------------------------------------------
+__fastcall TSettingFrm::TSettingFrm(TComponent* Owner)
+	: TForm(Owner)
+{
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSettingFrm::FormCreate(TObject *Sender)
+{
+
+	this->Hide();
+    first = false;
+	this->Enabled = true;
+	password = false;
+	myConfigForm = new TConfigForm(this);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSettingFrm::pOffButClick(TObject *Sender)
+{
+	if(mainForm->myOscForm)
+		mainForm->myOscForm->pOffButClick(NULL);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSettingFrm::FormShow(TObject *Sender)
+{
+	if(!first){
+		first = true;
+
+
+		int w_this = mainForm->myMainControlPanelForm->MainPanel->Width;
+		int h_this = mainForm->myMainControlPanelForm->MainPanel->Height;
+
+		PanelSubMonitor->Left = 20;
+		PanelSubMonitor->Top = 20;
+		PanelSubMonitor->Width = w_this - 40;
+		PanelSubMonitor->Height = h_this - 40;
+
+		int top = PanelLabelMonitor->Height;
+
+		int l = 300;
+		int p = 30;
+
+		int left1 = 10;
+		int left2 = PanelSubMonitor->Width - 300 - 10;
+
+
+		PanelIp->Left = left1;
+		PanelIp->Top = top + 20;
+		PanelIp->Width = l;
+		PanelIp->Height = p;
+
+		PanelMode->Left = left1;
+		PanelMode->Top = PanelIp->Top + 40;
+		PanelMode->Width = l;
+		PanelMode->Height = p;
+
+		PanelVersion->Left = left1;
+		PanelVersion->Top = PanelMode->Top + 40;
+		PanelVersion->Width = l;
+		PanelVersion->Height = p;
+		SoftwareVersionEdit->Caption = IntToStr(mainForm->SoftwareVersion.major1)+ IntToStr(mainForm->SoftwareVersion.major2) + "." + IntToStr(mainForm->SoftwareVersion.minor1) + IntToStr(mainForm->SoftwareVersion.minor2);
+
+		PanelID->Left = left1;
+		PanelID->Top = PanelVersion->Top + 40;
+		PanelID->Width = l;
+		PanelID->Height = p;
+        ClientIDEdit->Caption = IntToStr(mainForm->ClientID);
+
+
+
+		ConfigButtonPanel->Left = left1;
+		ConfigButtonPanel->Top = PanelID->Top + 40;
+		ConfigButtonPanel->Width = l;
+		ConfigButtonPanel->Height = p;
+
+
+		switch(mainForm->AppMode){
+			case 1:{
+				BriskModeEdit->Caption = "Contact";
+				break;
+			}
+			case 2:{
+				BriskModeEdit->Caption = "Non-Contact";
+				break;
+			}
+			case 3:{
+				BriskModeEdit->Caption = "MFM";
+				break;
+			}
+			case 4:{
+				BriskModeEdit->Caption = "EFM";
+				break;
+			}
+			case 5:{
+				BriskModeEdit->Caption = "Force Spectroscopy";
+				break;
+			}
+			case 6:{
+				BriskModeEdit->Caption = "KPFM";
+				break;
+			}
+			case 7:{
+				BriskModeEdit->Caption = "Lithography";
+				break;
+			}
+		}
+
+		myConfigForm->Height = mainForm->Height - 20;
+		myConfigForm->Width = mainForm->Height - 20;
+		myConfigForm->Top = mainForm->Height/2 - myConfigForm->Height/2;
+		myConfigForm->Left = mainForm->Width/2 - myConfigForm->Width/2;
+	}
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSettingFrm::ConfigButtonClick(TObject *Sender)
+{
+    Osc_PreviousState = false;
+	for(int i=0; i<4; i++){
+		if(mainForm->myOscForm->my_plot_set[i].bool_PlotPlay){
+			Osc_PreviousState = true;
+			mainForm->myOscForm->p1PauseClick(NULL);
+		}
+	}
+	mainForm->myVideoForm->VideoGrabber1->StopPreview();
+	mainForm->Enabled = false;
+	myConfigForm->Show();
+}
+//---------------------------------------------------------------------------
+
+
+
+void __fastcall TSettingFrm::FormKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+
+	if(password){
+		if(Key == VK_RETURN){
+			Timer1->Enabled = false;
+			password = false;
+			Check();
+		}
+		else{
+            input = Key;
+		}
+	}
+	else{
+		if(Key == VK_RETURN){
+			Timer1->Enabled = false;
+			Timer1->Enabled = true;
+			password = true;
+		}
+	}
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TSettingFrm::Timer1Timer(TObject *Sender)
+{
+	Timer1->Enabled = false;
+	password = false;
+}
+//---------------------------------------------------------------------------
+
+void TSettingFrm::Check()
+{
+	if(input == VK_UP){
+		ConfigButton->Show();
+	}
+}
+//---------------------------------------------------------------------------
+

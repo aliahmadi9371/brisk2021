@@ -1,0 +1,183 @@
+//---------------------------------------------------------------------------
+
+#ifndef ControlPanelFrmH
+#define ControlPanelFrmH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvBadge.hpp"
+#include "AdvEdit.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include "UdpDataSendClass.h"
+#include "AdvCombo.hpp"
+#include "AdvGlassButton.hpp"
+#include "AdvShape.hpp"
+#include "AdvShapeButton.hpp"
+#include <Vcl.Imaging.pngimage.hpp>
+#include <VCLTee.TeCanvas.hpp>
+#include <VCLTee.TeePenDlg.hpp>
+#include "AdvGlowButton.hpp"
+#include "CurvyControls.hpp"
+#include "htmlbtns.hpp"
+#include "AdvTrackBar.hpp"
+#include "DBAdvTrackBar.hpp"
+#include "AdvPanel.hpp"
+#include <System.Diagnostics.hpp>
+//---------------------------------------------------------------------------
+class TControlPanelForm : public TForm
+{
+__published:	// IDE-managed Components
+	TPanel *ApproachPanel;
+	TPanel *RetractPanel;
+	TShape *ShapeLineApproach;
+	TDBAdvGlowButton *DBAdvGlowButtonApproach;
+	THTMLRadioButton *RadioButtonNormal;
+	THTMLRadioButton *RadioButtonFast;
+	THTMLRadioButton *RadioButtonPrecise;
+	TDBAdvGlowButton *DBAdvGlowButtonRetract;
+	TDBAdvGlowButton *DBAdvGlowButtonUpOneStep;
+	TDBAdvGlowButton *DBAdvGlowButtonDownOneStep;
+	TLabel *LabelOneStep;
+	TPanel *PanelSlider;
+	TLabel *LabelTen;
+	TLabel *LabelHundred;
+	TLabel *LabelThousand;
+	TPanel *PanelOneStep;
+	TAdvTrackBar *AdvTrackBarRetract;
+	TLabel *LabelRetract;
+	TPanel *PanelLabelRetract;
+	TAdvPanel *PanelSubRetract;
+	TAdvPanel *PanelSubApproach;
+	TPanel *PanelLabelApproach;
+	TLabel *LabelApproach;
+	TPanel *ScanPanel;
+	TAdvPanel *PanelSubScan;
+	TShape *ShapeLineScan;
+	TPanel *PanelLabelScan;
+	TLabel *LabelScan;
+	TDBAdvGlowButton *DBAdvGlowButtonContinuous;
+	TDBAdvGlowButton *DBAdvGlowButtonScan;
+	TTimer *FastTimer;
+	TTimer *StopFastTimer;
+	TTimer *RetractTimer;
+	void __fastcall AdvBadgeButtonStartApproachClick(TObject *Sender);
+	void __fastcall AdvBadgeButtonStartScanClick(TObject *Sender);
+	void __fastcall AdvBadgeButtonStopScanClick(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall AdvBadgeButtonStopApprocheClick(TObject *Sender);
+	void __fastcall UpButtonClick(TObject *Sender);
+	void __fastcall DownButtonClick(TObject *Sender);
+	void __fastcall TenButtonClick(TObject *Sender);
+	void __fastcall HundredButtonClick(TObject *Sender);
+	void __fastcall ThousandButtonClick(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall DBAdvGlowButtonScanClick(TObject *Sender);
+	void __fastcall DBAdvGlowButtonContinuousClick(TObject *Sender);
+	void __fastcall DBAdvGlowButtonApproachClick(TObject *Sender);
+	void __fastcall DBAdvGlowButtonRetractClick(TObject *Sender);
+	void __fastcall AdvTrackBarRetractChange(TObject *Sender);
+	void __fastcall RadioButtonNormalClick(TObject *Sender);
+	void __fastcall RadioButtonFastClick(TObject *Sender);
+	void __fastcall RadioButtonPreciseClick(TObject *Sender);
+	void __fastcall FastTimerTimer(TObject *Sender);
+	void __fastcall StopFastTimerTimer(TObject *Sender);
+	void __fastcall RetractTimerTimer(TObject *Sender);
+
+
+
+private:	// User declarations
+	bool sstart;
+	void __fastcall StopScan();
+	void __fastcall StartStopApproch();
+	void __fastcall FinalizingImage();
+
+public:		// User declarations
+    void __fastcall StartScan();
+	__fastcall TControlPanelForm(TComponent* Owner);
+	void EnableOneStep(bool enabled);
+	void __fastcall RetDownUp();
+	void FastDncCurve();
+
+	UdpDataSendClass* myUdpDataSendClass;
+
+	void EnableScanPanel(int enabled);
+	void EnableApproachPanel(int enabled);
+
+	bool scanning;
+	bool approached;
+	bool approaching;
+
+	int Fast_Dnc_From;
+	int Fast_Dnc_To;
+	double Min_Amp;
+	double Max_Amp;
+	int Start_Drive;
+	double DriveIndex;
+	double DriveOffset;
+	int MainDriveVal;
+
+	double AmpIndex;
+	double AmpOffset;
+
+    int Pic_Freq;
+
+	int StatusFarNear;
+	bool FarNear;
+	int CountFarNear;
+	bool start;
+	bool set;
+	int mode;
+
+	bool fast;
+	bool StartApproach;
+
+	int resolution;
+
+	int Num;
+	int Status;
+	bool DownUp;
+
+	void GetFolder();
+	void SetFolderNames();
+	AnsiString ImageFolderUser;
+	bool FolderCreated;
+
+	AnsiString PicFolder;
+	AnsiString DateFolder;
+	AnsiString TimeFolder;
+
+	TGDIPPicture* ScanPic;
+	TGDIPPicture* ScanPicHover;
+	bool scan_selcet;
+
+	TGDIPPicture* ContinuousPic;
+	TGDIPPicture* ContinuousPicHover;
+	bool continuos_select;
+
+	TGDIPPicture* ApproachPic;
+	TGDIPPicture* ApproachPicHover;
+	bool approach_selcet;
+
+
+//	TPicture* Control;
+//	TPicture* ControlHover;
+	int RetractStep;
+
+	bool dnc;
+	bool fastfast;
+
+	bool dncCheck;
+	int StopFastState;
+
+	TStopwatch* StWatch;
+	TStopwatch stopwatch;
+	bool StWatchStarted;
+
+
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TControlPanelForm *ControlPanelForm;
+//---------------------------------------------------------------------------
+#endif

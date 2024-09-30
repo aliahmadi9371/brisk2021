@@ -1,0 +1,229 @@
+//---------------------------------------------------------------------------
+
+#ifndef OscConfigFrmH
+#define OscConfigFrmH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvGlassButton.hpp"
+#include "CurvyControls.hpp"
+#include <Vcl.ExtCtrls.hpp>
+//---------------------------------------------------------------------------
+class TOscConfigForm : public TForm
+{
+__published:	// IDE-managed Components
+	TPanel *HeaderPanel;
+	TAdvGlassButton *AdvGlassButton27;
+	TAdvGlassButton *AdvGlassButton28;
+	TAdvGlassButton *AdvGlassButton29;
+	TAdvGlassButton *AdvGlassButton30;
+	TAdvGlassButton *AdvGlassButton31;
+	TPanel *Panel1;
+	TAdvGlassButton *TAdvGlowButton1;
+	TCurvyEdit *CurvyEdit1;
+	TCurvyEdit *CurvyEdit2;
+	TCurvyEdit *CurvyEdit3;
+	TCurvyEdit *CurvyEdit4;
+	TCurvyEdit *CurvyEdit5;
+	TPanel *Panel2;
+	TAdvGlassButton *AdvGlassButton1;
+	TCurvyEdit *CurvyEdit6;
+	TCurvyEdit *CurvyEdit7;
+	TCurvyEdit *CurvyEdit8;
+	TCurvyEdit *CurvyEdit9;
+	TCurvyEdit *CurvyEdit10;
+	TPanel *Panel3;
+	TAdvGlassButton *AdvGlassButton2;
+	TCurvyEdit *CurvyEdit11;
+	TCurvyEdit *CurvyEdit12;
+	TCurvyEdit *CurvyEdit13;
+	TCurvyEdit *CurvyEdit14;
+	TCurvyEdit *CurvyEdit15;
+	TPanel *Panel4;
+	TAdvGlassButton *AdvGlassButton3;
+	TCurvyEdit *CurvyEdit16;
+	TCurvyEdit *CurvyEdit17;
+	TCurvyEdit *CurvyEdit18;
+	TCurvyEdit *CurvyEdit19;
+	TCurvyEdit *CurvyEdit20;
+	TPanel *Panel5;
+	TAdvGlassButton *AdvGlassButton4;
+	TCurvyEdit *CurvyEdit21;
+	TCurvyEdit *CurvyEdit22;
+	TCurvyEdit *CurvyEdit23;
+	TCurvyEdit *CurvyEdit24;
+	TCurvyEdit *CurvyEdit25;
+	TPanel *Panel6;
+	TAdvGlassButton *AdvGlassButton5;
+	TCurvyEdit *CurvyEdit26;
+	TCurvyEdit *CurvyEdit27;
+	TCurvyEdit *CurvyEdit28;
+	TCurvyEdit *CurvyEdit29;
+	TCurvyEdit *CurvyEdit30;
+	TPanel *Panel7;
+	TAdvGlassButton *AdvGlassButton6;
+	TCurvyEdit *CurvyEdit31;
+	TCurvyEdit *CurvyEdit32;
+	TCurvyEdit *CurvyEdit33;
+	TCurvyEdit *CurvyEdit34;
+	TCurvyEdit *CurvyEdit35;
+	TPanel *Panel8;
+	TAdvGlassButton *AdvGlassButton7;
+	TCurvyEdit *CurvyEdit36;
+	TCurvyEdit *CurvyEdit37;
+	TCurvyEdit *CurvyEdit38;
+	TCurvyEdit *CurvyEdit39;
+	TCurvyEdit *CurvyEdit40;
+	TPanel *Panel9;
+	TAdvGlassButton *AdvGlassButton8;
+	TCurvyEdit *CurvyEdit41;
+	TCurvyEdit *CurvyEdit42;
+	TCurvyEdit *CurvyEdit43;
+	TCurvyEdit *CurvyEdit44;
+	TCurvyEdit *CurvyEdit45;
+	TPanel *Panel10;
+	TAdvGlassButton *AdvGlassButton9;
+	TCurvyEdit *CurvyEdit46;
+	TCurvyEdit *CurvyEdit47;
+	TCurvyEdit *CurvyEdit48;
+	TCurvyEdit *CurvyEdit49;
+	TCurvyEdit *CurvyEdit50;
+	TPanel *Panel11;
+	TAdvGlassButton *AdvGlassButton10;
+	TCurvyEdit *CurvyEdit51;
+	TCurvyEdit *CurvyEdit52;
+	TCurvyEdit *CurvyEdit53;
+	TCurvyEdit *CurvyEdit54;
+	TCurvyEdit *CurvyEdit55;
+	TPanel *Panel12;
+	TAdvGlassButton *AdvGlassButton11;
+	TCurvyEdit *CurvyEdit56;
+	TCurvyEdit *CurvyEdit57;
+	TCurvyEdit *CurvyEdit58;
+	TCurvyEdit *CurvyEdit59;
+	TCurvyEdit *CurvyEdit60;
+	TPanel *Panel13;
+	TAdvGlassButton *AdvGlassButton12;
+	TCurvyEdit *CurvyEdit61;
+	TCurvyEdit *CurvyEdit62;
+	TCurvyEdit *CurvyEdit63;
+	TCurvyEdit *CurvyEdit64;
+	TCurvyEdit *CurvyEdit65;
+	TPanel *Panel14;
+	TAdvGlassButton *AdvGlassButton13;
+	TCurvyEdit *CurvyEdit66;
+	TCurvyEdit *CurvyEdit67;
+	TCurvyEdit *CurvyEdit68;
+	TCurvyEdit *CurvyEdit69;
+	TCurvyEdit *CurvyEdit70;
+	TPanel *Panel15;
+	TAdvGlassButton *AdvGlassButton14;
+	TCurvyEdit *CurvyEdit71;
+	TCurvyEdit *CurvyEdit72;
+	TCurvyEdit *CurvyEdit73;
+	TCurvyEdit *CurvyEdit74;
+	TCurvyEdit *CurvyEdit75;
+	TPanel *Panel16;
+	TAdvGlassButton *AdvGlassButton15;
+	TCurvyEdit *CurvyEdit76;
+	TCurvyEdit *CurvyEdit77;
+	TCurvyEdit *CurvyEdit78;
+	TCurvyEdit *CurvyEdit79;
+	TCurvyEdit *CurvyEdit80;
+	TPanel *Panel17;
+	TAdvGlassButton *AdvGlassButton16;
+	TCurvyEdit *CurvyEdit81;
+	TCurvyEdit *CurvyEdit82;
+	TCurvyEdit *CurvyEdit83;
+	TCurvyEdit *CurvyEdit84;
+	TCurvyEdit *CurvyEdit85;
+	TPanel *Panel18;
+	TAdvGlassButton *AdvGlassButton17;
+	TCurvyEdit *CurvyEdit86;
+	TCurvyEdit *CurvyEdit87;
+	TCurvyEdit *CurvyEdit88;
+	TCurvyEdit *CurvyEdit89;
+	TCurvyEdit *CurvyEdit90;
+	TPanel *Panel19;
+	TAdvGlassButton *AdvGlassButton18;
+	TCurvyEdit *CurvyEdit91;
+	TCurvyEdit *CurvyEdit92;
+	TCurvyEdit *CurvyEdit93;
+	TCurvyEdit *CurvyEdit94;
+	TCurvyEdit *CurvyEdit95;
+	TPanel *Panel20;
+	TAdvGlassButton *AdvGlassButton19;
+	TCurvyEdit *CurvyEdit96;
+	TCurvyEdit *CurvyEdit97;
+	TCurvyEdit *CurvyEdit98;
+	TCurvyEdit *CurvyEdit99;
+	TCurvyEdit *CurvyEdit100;
+	TPanel *Panel21;
+	TAdvGlassButton *AdvGlassButton20;
+	TCurvyEdit *CurvyEdit101;
+	TCurvyEdit *CurvyEdit102;
+	TCurvyEdit *CurvyEdit103;
+	TCurvyEdit *CurvyEdit104;
+	TCurvyEdit *CurvyEdit105;
+	TPanel *Panel22;
+	TAdvGlassButton *AdvGlassButton21;
+	TCurvyEdit *CurvyEdit106;
+	TCurvyEdit *CurvyEdit107;
+	TCurvyEdit *CurvyEdit108;
+	TCurvyEdit *CurvyEdit109;
+	TCurvyEdit *CurvyEdit110;
+	TPanel *Panel23;
+	TAdvGlassButton *AdvGlassButton22;
+	TCurvyEdit *CurvyEdit111;
+	TCurvyEdit *CurvyEdit112;
+	TCurvyEdit *CurvyEdit113;
+	TCurvyEdit *CurvyEdit114;
+	TCurvyEdit *CurvyEdit115;
+	TPanel *Panel24;
+	TAdvGlassButton *AdvGlassButton23;
+	TCurvyEdit *CurvyEdit116;
+	TCurvyEdit *CurvyEdit117;
+	TCurvyEdit *CurvyEdit118;
+	TCurvyEdit *CurvyEdit119;
+	TCurvyEdit *CurvyEdit120;
+	TPanel *Panel25;
+	TAdvGlassButton *AdvGlassButton24;
+	TCurvyEdit *CurvyEdit121;
+	TCurvyEdit *CurvyEdit122;
+	TCurvyEdit *CurvyEdit123;
+	TCurvyEdit *CurvyEdit124;
+	TCurvyEdit *CurvyEdit125;
+	TPanel *Panel26;
+	TAdvGlassButton *AdvGlassButton25;
+	TCurvyEdit *CurvyEdit126;
+	TCurvyEdit *CurvyEdit127;
+	TCurvyEdit *CurvyEdit128;
+	TCurvyEdit *CurvyEdit129;
+	TCurvyEdit *CurvyEdit130;
+	TPanel *Panel27;
+	TAdvGlassButton *AdvGlassButton26;
+	TCurvyEdit *CurvyEdit131;
+	TCurvyEdit *CurvyEdit132;
+	TCurvyEdit *CurvyEdit133;
+	TCurvyEdit *CurvyEdit134;
+	TCurvyEdit *CurvyEdit135;
+	TPanel *Panel28;
+	TAdvGlassButton *AdvGlassButton32;
+	TCurvyEdit *CurvyEdit136;
+	TCurvyEdit *CurvyEdit137;
+	TCurvyEdit *CurvyEdit138;
+	TCurvyEdit *CurvyEdit139;
+	TCurvyEdit *CurvyEdit140;
+	void __fastcall FormShow(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TOscConfigForm(TComponent* Owner);
+
+	bool first;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TOscConfigForm *OscConfigForm;
+//---------------------------------------------------------------------------
+#endif

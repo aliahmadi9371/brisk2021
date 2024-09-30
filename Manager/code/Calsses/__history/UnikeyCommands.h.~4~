@@ -1,0 +1,43 @@
+//---------------------------------------------------------------------------
+
+#ifndef UnikeyCommandsH
+#define UnikeyCommandsH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Data.FMTBcd.hpp>
+#include "UniKey.h"
+//---------------------------------------------------------------------------
+class UniKeyClass
+{
+public:
+
+	void FindDongle();
+	void OpenDongle();
+	void WriteDongle();
+    void ReadDongle();
+
+    int i;
+	int num;
+	String str;
+	Word mUniKeyNumber;
+	Byte tmpBuf[30];
+	Char cStr[100];
+	Byte mBuf[100];
+	Word mP1;
+	Word mP2;
+	Word mP3;
+	Word mP4;
+	WORD rt;
+	DWORD lP1;
+	DWORD lP2;
+	WORD mHand[16];
+	DWORD mHardID[16];
+	Word rc;
+
+
+
+};
+#endif

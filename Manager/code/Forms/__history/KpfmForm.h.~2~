@@ -1,0 +1,62 @@
+//---------------------------------------------------------------------------
+
+#ifndef KpfmFormH
+#define KpfmFormH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvPanel.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include "AdvGlowButton.hpp"
+#include "AdvGlassButton.hpp"
+#include "CurvyControls.hpp"
+//---------------------------------------------------------------------------
+class TKpfmFrm : public TForm
+{
+__published:	// IDE-managed Components
+	TAdvPanel *PanelSubKpfm;
+	TPanel *PanelLabelKpfm;
+	TLabel *LabelKpfm;
+	TAdvGlowButton *BiasFeedbackButton;
+	TAdvGlowButton *PhaseFeedbackButton;
+	TPanel *Panel1;
+	TAdvGlassButton *ToAdvEditLbl;
+	TCurvyEdit *ToAdvEdit;
+	TPanel *Panel2;
+	TAdvGlassButton *AdvGlassButton2;
+	TCurvyEdit *CurvyEdit2;
+	TPanel *Panel5;
+	TAdvGlassButton *AdvGlassButton1;
+	TCurvyEdit *CurvyEdit1;
+	TPanel *Panel4;
+	TAdvGlassButton *AdvGlassButton3;
+	TCurvyEdit *CurvyEdit3;
+	TPanel *Panel6;
+	TAdvGlassButton *AdvGlassButton4;
+	TCurvyEdit *CurvyEdit4;
+	TPanel *Panel7;
+	TAdvGlassButton *AdvGlassButton5;
+	TCurvyEdit *CurvyEdit5;
+	TPanel *Panel3;
+	TAdvGlassButton *AdvGlassButton6;
+	TCurvyEdit *CurvyEdit6;
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall BiasFeedbackButtonClick(TObject *Sender);
+	void __fastcall PhaseFeedbackButtonClick(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TKpfmFrm(TComponent* Owner);
+
+	bool first;
+
+
+	bool bias;
+	bool phase;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TKpfmFrm *KpfmFrm;
+//---------------------------------------------------------------------------
+#endif

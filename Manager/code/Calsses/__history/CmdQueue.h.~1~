@@ -1,0 +1,28 @@
+//---------------------------------------------------------------------------
+
+#ifndef CmdQueueH
+#define CmdQueueH
+//---------------------------------------------------------------------------
+class CmdQueue
+{
+private:
+	TMutex *mutex;
+public:
+	__fastcall CmdQueue(int size = CMD_QUEUE_SIZE);
+	~CmdQueue();
+
+	void dequeue(int cmd);
+	void enqueue();
+	int peek();
+
+	int size();
+	bool isEmpty();
+	bool isFull();
+	void initQ();
+
+	int *arr;
+	int capacity;	// maximum capacity of the queue
+	int front;		// front points to front element in the queue (if any)
+	int rear;		// rear points to last element in the queue
+	int count;		// current size of the queue
+#endif

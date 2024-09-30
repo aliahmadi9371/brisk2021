@@ -1,0 +1,65 @@
+//---------------------------------------------------------------------------
+
+#ifndef ApproachFrmH
+#define ApproachFrmH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <IniFiles.hpp>
+#include "AdvEdit.hpp"
+//---------------------------------------------------------------------------
+class TApproachPanelForm : public TForm
+{
+__published:	// IDE-managed Components
+	TAdvEdit *KiAdvEdit;
+	TAdvEdit *BiasAdvEdit;
+	TAdvEdit *StpAdvEdit;
+	TAdvEdit *RefAdvEdit;
+	TCheckBox *AppCheckBox;
+	TCheckBox *fast_checkbox;
+	TLabel *ApproachStatusLabel;
+	TAdvEdit *KdAdvEdit;
+	TAdvEdit *KpAdvEdit;
+	TAdvEdit *KiFeebackAdvEdit;
+
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall KiAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall BiasAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall StpAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall RefAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall KdAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall KpAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall KiFeebackAdvEditKeyPress(TObject *Sender, System::WideChar &Key);
+
+
+private:	// User declarations
+	TIniFile *iniFile;
+    void __fastcall SetApproach();
+
+public:		// User declarations
+	__fastcall TApproachPanelForm(TComponent* Owner);
+	void SettApproach();
+
+
+
+	bool first;
+
+	void GetIniToUi();
+
+	int RefrenceApp;
+	int KiApp_Contact;
+	int KiApp_NonContact;
+	int BiasApp;
+	int StpApp;
+	int KdApp;
+	int KpApp;
+	int KiFeedback_Contact;
+	int KiFeedback_NonContact;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TApproachPanelForm *ApproachPanelForm;
+//---------------------------------------------------------------------------
+#endif

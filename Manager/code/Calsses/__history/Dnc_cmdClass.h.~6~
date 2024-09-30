@@ -1,0 +1,57 @@
+//---------------------------------------------------------------------------
+
+#ifndef Dnc_cmdClassH
+#define Dnc_cmdClassH
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.Classes.hpp>
+#include <System.Math.hpp>
+#include <System.SyncObjs.hpp>
+
+#include "UdpDataSendClass.h"
+//---------------------------------------------------------------------------
+class Dnc_cmdClass
+{
+private:
+	TMutex *mutex;
+	void __fastcall SendDncPacket();
+protected:
+public:
+	__fastcall Dnc_cmdClass();
+	void ConfigCalss();
+	void InitClass();
+	void CreateClassObjects();
+	void GetDataFromUi();
+	void GetDataFromIni();
+	void CalculateParams();
+	void StartDncProcess(bool start);
+
+	UdpDataSendClass* myUdpDataSendClass;
+
+	int Freq_From_Val;
+	int Freq_To_Val;
+	int Freq_Use_Val;
+	int Freq_Drive_Val;
+	int Freq_PointsCount_Val;
+	int Freq_SetPoint_Val;
+	double Freq_TimeCnt_Val;
+	int Freq_PointsCount;
+	int Freq_Gain_Val;
+	int Freq_Rolloff;
+
+	double AmpIndex;
+	double AmpOffset;
+	double DrvScale;
+
+	int From;
+	int To;
+	int Use;
+	int TimeConstant;
+	int Step;
+	int Reference;
+	int Drive;
+	int Point;
+	int Gain;
+	int RollOff;
+};
+#endif

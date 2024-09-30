@@ -1,0 +1,21 @@
+//---------------------------------------------------------------------------
+
+#ifndef ApproacheFrmH
+#define ApproacheFrmH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+//---------------------------------------------------------------------------
+class TApproachPanelForm : public TForm
+{
+__published:	// IDE-managed Components
+private:	// User declarations
+public:		// User declarations
+	__fastcall TApproachPanelForm(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TApproachPanelForm *ApproachPanelForm;
+//---------------------------------------------------------------------------
+#endif

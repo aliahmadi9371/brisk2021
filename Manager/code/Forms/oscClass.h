@@ -1,0 +1,375 @@
+//---------------------------------------------------------------------------
+
+#ifndef oscClassH
+#define oscClassH
+//---------------------------------------------------------------------------
+#include <System.Math.hpp>
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <VCLTee.Chart.hpp>
+#include <VCLTee.Series.hpp>
+#include <VCLTee.TeEngine.hpp>
+#include <VCLTee.TeeProcs.hpp>
+#include <VCLTee.Teestore.hpp>
+#include <Vcl.Menus.hpp>
+#include <Vcl.ComCtrls.hpp>
+#include <VclTee.TeeGDIPlus.hpp>
+#include <IniFiles.hpp>
+
+
+#include "AdvGlassButton.hpp"
+#include "advmultibuttonedit.hpp"
+#include "AdvUpDownEdit.hpp"
+#include "AdvEdit.hpp"
+#include "CalcEdit.hpp"
+#include <IniFiles.hpp>
+#include "AdvBadge.hpp"
+
+#include <math.h>
+
+#include "VCLTee.TeeTools.hpp"
+#include "globals.h"
+#include "VCLTee.TeeComma.hpp"
+#include "AdvCombo.hpp"
+#include "AdvCircularProgress.hpp"
+#include "AdvGlowButton.hpp"
+#include "VCLTee.TeeEdit.hpp"
+#include "AdvLabel.hpp"
+#include "AdvShape.hpp"
+#include "AdvTrackBar.hpp"
+
+#include "UdpDataSendClass.h"
+#include <Vcl.Imaging.pngimage.hpp>
+#include "CurvyControls.hpp"
+#include "LitoFileCreatorUnit.h"
+//---------------------------------------------------------------------------
+struct data_set {
+	UnicodeString data_name;
+	UnicodeString data_unit;
+	double data_index;
+	double data_offset;
+	int data_scale;
+};
+
+struct plot_set{
+	TPanel *main_Panel;
+	TPanel *panel_Setting;
+	TCurvyCombo *combo_WaveName;
+	TTeeCommander *commander;
+	TComboBox *combo_unit;
+	TTimer *timer_Chart;
+//	TAdvEdit *advedit_PanelNumber;
+//	TAdvEdit *advedit_ChartNumber;
+//	TAdvEdit *calclabel_AvgValue;
+//	TAdvEdit *calclabel_ChgValue;
+	TFastLineSeries *fastlineseries_Series;
+	TCursorTool *charttool_Cursor;
+	TChart *chart_Chart;
+	bool bool_PlotInit;
+	int int_WaveIndex;
+	bool bool_PlotActive;
+	bool bool_PlotPlay;
+	int int_X;
+	bool bool_Created;
+	bool bool_FirstStep;
+	double double_Sum;
+	double double_Avg;
+	double double_Min;
+	double double_Max;
+	double double_Chg;
+
+//	TAdvGlassButton* calclabel_AvgValue;
+//	TAdvGlassButton* calclabel_ChgValue;
+
+	TCurvyEdit* calclabel_AvgValue;
+	TCurvyEdit* calclabel_ChgValue;
+	int Counter;
+};
+//---------------------------------------------------------------------------
+class ToscForm : public TForm
+{
+__published:	// IDE-managed Components
+
+	TPanel *p1Panel;
+	TComboBox *ComboBox_Unit1;
+	TChart *oscChart1;
+	TFastLineSeries *Series1;
+	TCursorTool *ChartTool1;
+	TTimer *plotTimer;
+
+	TPanel *p2Panel;
+	TComboBox *ComboBox_Unit2;
+	TChart *oscChart2;
+	TFastLineSeries *Series2;
+	TCursorTool *ChartTool2;
+
+	TPanel *p3Panel;
+	TComboBox *ComboBox_Unit3;
+	TChart *oscChart3;
+	TFastLineSeries *Series3;
+	TCursorTool *ChartTool3;
+
+	TPanel *p4Panel;
+	TComboBox *ComboBox_Unit4;
+	TChart *oscChart4;
+	TFastLineSeries *Series4;
+	TCursorTool *ChartTool4;
+
+	TPanel *pnlChart;
+	TPanel *PanelRecord;
+	TPanel *PanelPlayPuase;
+	TTimer *RecordTimer;
+	TPanel *PanelBot;
+	TAdvGlassButton *pOffBut;
+	TTimer *CrossTimer;
+	TAdvEdit *edtAvg2;
+	TAdvEdit *edtChg2;
+	TAdvEdit *edtAvg3;
+	TAdvEdit *edtChg3;
+	TAdvEdit *edtChg4;
+	TAdvEdit *edtAvg4;
+	TAdvEdit *edtChg1;
+	TPanel *Panel_Bot_off;
+	TPanel *PanelAddSub;
+	TPanel *PanelTimeDev;
+	TPanel *PanelChart1;
+	TPanel *PanelChart2;
+	TPanel *PanelChart3;
+	TPanel *PanelChart4;
+	TPanel *Panel1_1;
+	TPanel *Panel2_2;
+	TPanel *Panel3_3;
+	TPanel *Panel4_4;
+	TPanel *pPanel1;
+	TPanel *pPanel2;
+	TPanel *pPanel3;
+	TPanel *pPanel4;
+	TTimer *TimerRecCounter;
+	TTeeCommander *TeeCommander1;
+	TChartEditor *ChartEditor1;
+	TChartEditor *ChartEditor2;
+	TChartEditor *ChartEditor3;
+	TChartEditor *ChartEditor4;
+	TTeeCommander *TeeCommander2;
+	TTeeCommander *TeeCommander3;
+	TTeeCommander *TeeCommander4;
+	TAdvTrackBar *ComboBox1;
+	TLabel *AdvEdit5;
+	TCurvyCombo *p1ComboBox;
+	TCurvyCombo *p2ComboBox;
+	TCurvyCombo *p3ComboBox;
+	TCurvyCombo *p4ComboBox;
+	TAdvEdit *edtAvg1;
+	TPanel *SubPanelAddSub;
+	TAdvShape *AdvShapeEditAddSub;
+	TDBAdvGlowButton *DBAdvGlowButtonSub;
+	TDBAdvGlowButton *DBAdvGlowButtonAdd;
+	TDBAdvGlowButton *DBAdvGlowButtonPalyPause;
+	TDBAdvGlowButton *DBAdvGlowButtonRecord;
+	TLabel *LabelAddSubEdit;
+	TAdvGlassButton *Avg1Lbl;
+	TPanel *Panel1Avg;
+	TPanel *Panel1Chg;
+	TAdvGlassButton *Chg1Lbl;
+	TPanel *Panel2Avg;
+	TAdvGlassButton *Avg2Lbl;
+	TPanel *Panel2Chg;
+	TAdvGlassButton *Chg2Lbl;
+	TPanel *Panel3Avg;
+	TAdvGlassButton *Avg3Lbl;
+	TPanel *Panel3Chg;
+	TAdvGlassButton *Cgh3Lbl;
+	TPanel *Panel4Avg;
+	TAdvGlassButton *Avg4Lbl;
+	TPanel *Panel4Chg;
+	TAdvGlassButton *Chg4Lbl;
+	TCurvyEdit *Avg1;
+	TCurvyEdit *Chg1;
+	TCurvyEdit *Avg2;
+	TCurvyEdit *Chg2;
+	TCurvyEdit *Avg3;
+	TCurvyEdit *Chg3;
+	TCurvyEdit *Avg4;
+	TCurvyEdit *Chg4;
+	TTimer *OffTimer;
+	TTimer *piezoTimer;
+
+
+	void __fastcall pOffButClick(TObject *Sender);
+
+	//void __fastcall UpDownChartClick(TObject *Sender, TUDBtnType Button);
+	void __fastcall p1PauseClick(TObject *Sender);
+
+	void __fastcall AdvUpDownEdit1ClickAdd(TObject *Sender);
+	void __fastcall AdvUpDownEdit1ClickSub(TObject *Sender);
+
+	void __fastcall plotTimerTimer(TObject *Sender);
+
+	void __fastcall RecordTimerTimer(TObject *Sender);
+	void __fastcall ComboBox1Change(TObject *Sender);
+	void __fastcall AdvGlassButton1Click(TObject *Sender);
+	void __fastcall CrossTimerTimer(TObject *Sender);
+	void __fastcall TimerRecCounterTimer(TObject *Sender);
+	void __fastcall p2ComboBoxSelect(TObject *Sender);
+	void __fastcall p3ComboBoxSelect(TObject *Sender);
+	void __fastcall p4ComboBoxSelect(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall p1ComboBoxSelect(TObject *Sender);
+	void __fastcall OffTimerTimer(TObject *Sender);
+	void __fastcall piezoTimerTimer(TObject *Sender);
+
+
+
+
+
+
+
+
+
+
+
+
+
+//	void __fastcall ComboBox_Unit1Change(TObject *Sender);
+//	void __fastcall ComboBox_Unit2Change(TObject *Sender);
+//	void __fastcall ComboBox_Unit3Change(TObject *Sender);
+//	void __fastcall ComboBox_Unit4Change(TObject *Sender);
+
+
+	//void __fastcall AdvEdit1_1Change(TObject *Sender);
+private:	// User declarations
+
+
+	void SetChartStruct();
+	void NULLDesignElements(int plot_number);
+	void SetDesignElements(int plot_number);
+	void SetChartStructValues(int plot_number);
+	void SetChartStructDesign(int plot_number);
+	void SetEachChartShow(bool show, int plot_number);
+	void SetChartForRealTime(int plot_number);
+	void SetChartLable(int plot_number);
+	void SetColor(int plot_number);
+	void SetChartPanelLTWH(int left, int top, int width, int heigth, int plot_number);
+	void InitOthers();
+	void ActivatePlot(bool active, int plot_number);
+	void ChangeCombo(int plot_number);
+	void oscChartInit();
+	void createComboBox(TCurvyCombo *box);
+	int findFreePlot() ;
+	void createPlot(double myData,UnicodeString title, int plot_number);
+	void DoMinMaxAvgChg(int plot_number,double myData);
+	void DoChgAvgLabel(int scale,int plot_number);
+	void InitCharts();
+	void showPlots(int count);
+	void showChart_Panels(int panels);
+
+	void __fastcall SendPacket();
+	void __fastcall StopScan();
+    void __fastcall StopFs();
+
+
+	int constx_dots;
+	bool b_pc_on;
+	bool bPlotInit;
+	bool activated;
+	int time_dev;
+	int time_ref_width;
+	int current_time_dev_with;
+
+	int i_RealChartCount;
+	bool recording;
+	bool rec_created;
+	int rec_time;
+	int labelCounter;
+    int TOPO;
+
+public:		// User declarations
+	__fastcall ToscForm(TComponent* Owner);
+	__fastcall ~ToscForm();
+	void RunChart(bool run);
+	void config_DataSet_INI();
+	void refreshPlots();
+	void reSizePlot();
+	int returnScale(int index);
+	UnicodeString FindUnit(TComboBox * combo);
+	UnicodeString ShowUnit(int scale);
+	int FindScale(double data);
+	UnicodeString FindData(TComboBox * combo);
+	void createComboUnit(int index, TComboBox * combo);
+
+	void SaveOscConfig();
+	void LoadOscConfig();
+
+
+    plot_set my_plot_set[4];
+	data_set my_data_set[27];
+	bool first;
+	int TimePlot;
+	int z;
+	int comboIndex;
+	bool firstPlot;
+	int OffState;
+    int ErrorPercent;
+
+	void ShowPlot(int plot_number, bool show);
+
+	TDateTime START;
+
+	void changeAllSampleRate(int time);
+
+	UdpDataSendClass* myUdpDataSendClass;
+
+	double xx; //tb
+	double yy; //lr
+	double zz; // Ins
+//	double tt; //Amplk
+
+    int I;
+
+	bool firstPlotfirst;
+
+	int counter;
+	int i_ChartCount;
+
+	bool plotDnc;
+
+	bool paly_pause;
+	bool enabled_playpause;
+	TGDIPPicture *PausePic;
+	TGDIPPicture *PausePicHover;
+
+	bool enabled_addsub;
+
+	bool enabled_timedev;
+
+	bool enabled_rec;
+	bool in_rec_panel;
+	TGDIPPicture *RecPic;
+	TGDIPPicture *RecPicHover;
+
+
+	void LoadPictures();
+	void Init();
+
+	int PiezoCounter;
+
+	void MakePlayPusClicked(bool play);
+	void MakeRecordClicked(bool record);
+
+	bool firstSave;
+
+	bool all_scale;
+    bool FlyError;
+
+
+	double FastAmp;
+	LithoFileCreatorThread* myLithoThread;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE ToscForm *oscForm;
+//---------------------------------------------------------------------------
+#endif

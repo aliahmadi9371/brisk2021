@@ -1,0 +1,79 @@
+//---------------------------------------------------------------------------
+
+#ifndef VidClassH
+#define VidClassH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <IniFiles.hpp>
+#include "VidGrab.hpp"
+#include "AdvGroupBox.hpp"
+
+
+#include "UdpDataSendClass.h"
+
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.Dialogs.hpp>
+#include "PickDlg.hpp"
+
+#include "VidSettingForm.h"
+//---------------------------------------------------------------------------
+class TVidForm : public TForm
+{
+__published:	// IDE-managed Components
+	TVideoGrabber *VideoGrabber1;
+	TButton *RightButton;
+	TButton *LeftButton;
+	TButton *FrontButton;
+	TButton *BackButton;
+	TButton *SetButton;
+	TButton *ShotButton;
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall LeftButtonMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall LeftButtonMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall FrontButtonMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall FrontButtonMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall RightButtonMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall RightButtonMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall BackButtonMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall BackButtonMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall SetButtonClick(TObject *Sender);
+	void __fastcall ShotButtonClick(TObject *Sender);
+	void __fastcall VideoGrabber1MouseLeave(TObject *Sender, int VideoWindow);
+	void __fastcall VideoGrabber1MouseEnter(TObject *Sender, int VideoWindow);
+private:	// User declarations
+	int Camera_Index;
+
+	void __fastcall StepperStage();
+public:		// User declarations
+	__fastcall TVidForm(TComponent* Owner);
+	void EnableStage(bool enabled);
+
+	void SetRecordFile();
+
+	bool first;
+
+	byte StateM;
+	int StatusMove;
+	int Stop;
+	bool SShift;
+
+	bool record;
+
+	TVidSettingFrm* myVidSettingForm;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TVidForm *VidForm;
+//---------------------------------------------------------------------------
+#endif

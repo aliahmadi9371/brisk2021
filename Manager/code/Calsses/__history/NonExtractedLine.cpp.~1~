@@ -1,0 +1,38 @@
+//---------------------------------------------------------------------------
+#pragma hdrstop
+
+#include "NonExtractedLine.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+
+__fastcall NonExtractedLine::NonExtractedLine()
+{
+	SetCreated(false);
+}
+//---------------------------------------------------------------------------
+
+NonExtractedLine::~NonExtractedLine()
+{
+
+}
+//---------------------------------------------------------------------------
+
+void NonExtractedLine::newNonExtracted(TByteDynArray myData,int myResolution)
+{
+	bytes = new unsigned char[myResolution*4 + HEADER_COUNT]; // just data
+	for(int i=0; i<myResolution*4 + HEADER_COUNT; i++)
+		bytes[i] = myData[i];
+	SetCreated(true);
+}
+//---------------------------------------------------------------------------
+
+void NonExtractedLine::resetData()
+{
+	if(Created)
+		delete[] bytes;
+	SetCreated(false);
+}
+//---------------------------------------------------------------------------
+
+

@@ -1,0 +1,425 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "KpfmForm.h"
+#include "mainUnit.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "AdvPanel"
+#pragma link "AdvGlowButton"
+#pragma link "AdvGlassButton"
+#pragma link "CurvyControls"
+#pragma resource "*.dfm"
+TKpfmFrm *KpfmFrm;
+//---------------------------------------------------------------------------
+__fastcall TKpfmFrm::TKpfmFrm(TComponent* Owner)
+	: TForm(Owner)
+{
+	bias = false;
+	phase = false;
+	lia = false;
+}
+//---------------------------------------------------------------------------
+
+void TKpfmFrm::GetIniKpfmForm()
+{
+	TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+	freq = iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Frequency_Val",0);
+	voltage = iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_DriveVoltage_Val",0);
+	lia1 = iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Lia1_Val",0);
+	ki = iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Ki_Val",0);
+	kp = iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Kp_Val",0);
+	kd = iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Kd_Val",0);
+	th = iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Th_Val",0);
+	Voltage_index = iniFile->ReadFloat("APPROACH_CONFIG", "Apr_BiasIndex_Val", 0); //bias
+	Voltage_offset = iniFile->ReadFloat("APPROACH_CONFIG", "Apr_BiasOffset_Val", 0); //bias
+	delete iniFile;
+}
+//---------------------------------------------------------------------------
+
+//void TKpfmFrm::SetIniKpfmForm()
+//{
+//	TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+//	iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Frequency_Val",freq);
+//	iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_DriveVoltage_Val",voltage);
+//	iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Lia1_Val",lia1);
+//	iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Ki_Val",ki);
+//	iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Kp_Val",kp);
+//	iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Kd_Val",kd);
+//	iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Th_Val",th);
+//	delete iniFile;
+//}
+//---------------------------------------------------------------------------
+
+void TKpfmFrm::SetUiKpfmForm()
+{
+	FreqAdvEdit->Text = IntToStr(freq);
+	VoltageAdvEdit->Text = IntToStr(voltage);
+	Lia1AdvEdit->Text = IntToStr(lia1);
+	KiAdvEdit->Text = IntToStr(ki);
+	KpAdvEdit->Text = IntToStr(kp);
+	KdAdvEdit->Text = IntToStr(kd);
+	ThAdvEdit->Text = IntToStr(th);
+
+	voltage = voltage * Voltage_index + Voltage_offset;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::FormShow(TObject *Sender)
+{
+	if(!first){
+        int w_this = mainForm->myMainControlPanelForm->MainPanel->Width;
+		int h_this = mainForm->myMainControlPanelForm->MainPanel->Height;
+
+		PanelSubKpfm->Width = w_this - 40;
+		PanelSubKpfm->Height = h_this - 40;
+		PanelSubKpfm->Left = 20;
+		PanelSubKpfm->Top = 20;
+
+		int w = PanelSubKpfm->Width;
+		int h = PanelSubKpfm->Height - PanelSubKpfm->Height;
+
+		int Top = PanelSubKpfm->Top + 10;
+
+		int l = 260;
+		int p = 30;
+
+        int left1 =  10;
+		int left2 = w - 10 - 100;
+
+		Panel1->Left = left1;
+		Panel1->Top = Top + 10;
+		Panel1->Width = l;
+		Panel1->Height = p;
+		Panel1->BringToFront();
+
+		Panel2->Left = left1;
+		Panel2->Top = Panel1->Top + 40;
+		Panel2->Width = l;
+		Panel2->Height = p;
+		Panel2->BringToFront();
+
+		Panel3->Left = left1;
+		Panel3->Top = Panel2->Top + 40;
+		Panel3->Width = l;
+		Panel3->Height = p;
+		Panel3->BringToFront();
+
+		Panel4->Left = left1;
+		Panel4->Top = Panel3->Top + 40;
+		Panel4->Width = l;
+		Panel4->Height = p;
+		Panel4->BringToFront();
+
+		Panel5->Left = left1;
+		Panel5->Top = Panel4->Top + 40;
+		Panel5->Width = l;
+		Panel5->Height = p;
+		Panel5->BringToFront();
+
+		Panel6->Left = left1;
+		Panel6->Top = Panel5->Top + 40;
+		Panel6->Width = l;
+		Panel6->Height = p;
+		Panel6->BringToFront();
+
+		Panel7->Left = left1;
+		Panel7->Top = Panel6->Top + 40;
+		Panel7->Width = l;
+		Panel7->Height = p;
+		Panel7->BringToFront();
+
+		BiasFeedbackButton->Left = left2;
+		PhaseFeedbackButton->Left = left2;
+		LiaButton->Left = left2;
+
+		BiasFeedbackButton->Top = Top + 10;
+		PhaseFeedbackButton->Top = BiasFeedbackButton->Top + BiasFeedbackButton->Height + 10;
+		LiaButton->Top = PhaseFeedbackButton->Top + PhaseFeedbackButton->Height + 10;
+
+		BiasFeedbackButton->BringToFront();
+		PhaseFeedbackButton->BringToFront();
+		LiaButton->BringToFront();
+
+
+
+		Panel8->Left = left1;
+		Panel8->Top = Panel7->Top + 40;
+		Panel8->Width = l;
+		Panel8->Height = p;
+		Panel8->BringToFront();
+
+
+		Panel9->Left = left1;
+		Panel9->Top = Panel8->Top + 40;
+		Panel9->Width = l;
+		Panel9->Height = p;
+		Panel9->BringToFront();
+
+
+		first = true;
+
+		GetIniKpfmForm();
+		SetUiKpfmForm();
+		AllEditWhite();
+	}
+
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TKpfmFrm::FormCreate(TObject *Sender)
+{
+	this->Hide();
+	first = false;
+
+	bias = false;
+	phase = false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::BiasFeedbackButtonClick(TObject *Sender)
+{
+	mainForm->LogToFile("TKpfmFrm::BiasFeedbackButtonClick");
+	if(bias){
+		bias = false;
+		BiasFeedbackButton->Appearance->BorderColor = TColor(0x008B6757);
+		BiasFeedbackButton->Font->Color = clWhite;
+	}
+	else{
+		bias = true;
+		BiasFeedbackButton->Appearance->BorderColor = TColor(0x00F0D27D);
+		BiasFeedbackButton->Font->Color = TColor(0x00F0D27D);
+	}
+	if(bias && lia)
+		bbias = 0x03;
+	else if(bias && !lia)
+		bbias = 0x01;
+	else if(!bias & lia)
+		bbias = 0x02;
+	else
+		bbias = 0x00;
+    TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::PhaseFeedbackButtonClick(TObject *Sender)
+{
+	mainForm->LogToFile("TKpfmFrm::PhaseFeedbackButtonClick");
+	if(phase){
+		phase = false;
+		PhaseFeedbackButton->Appearance->BorderColor = TColor(0x008B6757);
+		PhaseFeedbackButton->Font->Color = clWhite;
+	}
+	else{
+		phase = true;
+		PhaseFeedbackButton->Appearance->BorderColor = TColor(0x00F0D27D);
+		PhaseFeedbackButton->Font->Color = TColor(0x00F0D27D);
+	}
+
+	if(phase)
+		pphase = 1;
+	else
+		pphase = 0;
+	TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::SendKpfm()
+{
+	mainForm->LogToFile("TKpfmFrm::SendKpfm");
+	mainForm->myCommandCreatorThread->SendKpfm(freq, voltage, pphase, lia1, ki, kp, kd, th, bbias);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::FreqAdvEditKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TKpfmFrm::FreqAdvEditKeyPress");
+		FreqAdvEdit->Color =clWhite;
+		freq = FreqAdvEdit->Text.ToInt();
+		TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+		iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Frequency_Val",freq);
+		delete iniFile;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::VoltageAdvEditKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TKpfmFrm::VoltageAdvEditKeyPress");
+		voltage = VoltageAdvEdit->Text.ToInt();
+		VoltageAdvEdit->Color = clWhite;
+		TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+		iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_DriveVoltage_Val",voltage);
+		delete iniFile;
+		voltage = voltage * Voltage_index + Voltage_offset;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::Lia1AdvEditKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TKpfmFrm::Lia1AdvEditKeyPress");
+		lia1 = Lia1AdvEdit->Text.ToInt();
+		Lia1AdvEdit->Color = clWhite;
+		TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+		iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Lia1_Val",lia1);
+		delete iniFile;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::KiAdvEditKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TKpfmFrm::KiAdvEditKeyPress");
+		ki = KiAdvEdit->Text.ToInt();
+		KiAdvEdit->Color = clWhite;
+		TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+		iniFile->WriteInteger("KPFM_CONFIG", "Kpfm_Ki_Val",ki);
+		delete iniFile;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::KpAdvEditKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TKpfmFrm::KpAdvEditKeyPress");
+		kp = KpAdvEdit->Text.ToInt();
+		KpAdvEdit->Color = clWhite;
+		TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+		iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Kp_Val",kp);
+		delete iniFile;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::KdAdvEditKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TKpfmFrm::KdAdvEditKeyPress");
+		kd = KdAdvEdit->Text.ToInt();
+		KdAdvEdit->Color = clWhite;
+		TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+		iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Kd_Val",kd);
+		delete iniFile;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::ThAdvEditKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TKpfmFrm::ThAdvEditKeyPress");
+		th = ThAdvEdit->Text.ToInt();
+		ThAdvEdit->Color = clWhite;
+		TIniFile *iniFile = new TIniFile(MainPath + "/config.ini");
+		iniFile->ReadInteger("KPFM_CONFIG", "Kpfm_Th_Val",th);
+		delete iniFile;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::LiaButtonClick(TObject *Sender)
+{
+	mainForm->LogToFile("TKpfmFrm::LiaButtonClick");
+	if(lia){
+		lia = false;
+		LiaButton->Caption = "LIA1";
+		LiaButton->Appearance->BorderColor = TColor(0x008B6757);
+		LiaButton->Font->Color = clWhite;
+		mainForm->myImageFrom->Togle1_2(false);
+	}
+	else{
+		lia = true;
+		LiaButton->Caption = "LIA2";
+		LiaButton->Appearance->BorderColor = TColor(0x00F0D27D);
+		LiaButton->Font->Color = TColor(0x00F0D27D);
+        mainForm->myImageFrom->Togle1_2(true);
+	}
+	if(bias && lia)
+		bbias = 0x03;
+	else if(bias && !lia)
+		bbias = 0x01;
+	else if(!bias & lia)
+		bbias = 0x02;
+	else
+		bbias = 0x00;
+	TThread::Synchronize(mainForm->myCommandCreatorThread,SendKpfm);
+}
+//---------------------------------------------------------------------------
+
+void TKpfmFrm::AllEditWhite()
+{
+	FreqAdvEdit->Color = clWhite;
+	VoltageAdvEdit->Color = clWhite;
+	Lia1AdvEdit->Color = clWhite;
+	KiAdvEdit->Color = clWhite;
+	KpAdvEdit->Color = clWhite;
+	KdAdvEdit->Color = clWhite;
+	ThAdvEdit->Color = clWhite;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::FreqAdvEditChange(TObject *Sender)
+{
+	FreqAdvEdit->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::VoltageAdvEditChange(TObject *Sender)
+{
+	VoltageAdvEdit->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::Lia1AdvEditChange(TObject *Sender)
+{
+	Lia1AdvEdit->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::KiAdvEditChange(TObject *Sender)
+{
+	KiAdvEdit->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::KpAdvEditChange(TObject *Sender)
+{
+	KpAdvEdit->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::KdAdvEditChange(TObject *Sender)
+{
+	KdAdvEdit->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TKpfmFrm::ThAdvEditChange(TObject *Sender)
+{
+	ThAdvEdit->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+

@@ -1,0 +1,152 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "RounadForm.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TFormRound *FormRound;
+//---------------------------------------------------------------------------
+__fastcall TFormRound::TFormRound(TComponent* Owner)
+	: TForm(Owner)
+{
+
+}
+//---------------------------------------------------------------------------
+
+void TFormRound::CreateCanvas()
+{
+	width = this->Width;
+	height = this->Height;
+	radius = this->Width/20;
+
+
+	ImageCAnvas->Canvas->Pen->Color= clWhite;
+	ImageCAnvas->Canvas->Brush->Color = 0x00614438;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+	ImageCAnvas->Canvas->FillRect(TRect(0,0,width,height));
+
+	ImageCAnvas->Canvas->Pen->Width = 3;
+	ImageCAnvas->Canvas->Pen->Color= 0x00553629;
+	ImageCAnvas->Canvas->Pen->Width = 1;
+	ImageCAnvas->Canvas->Brush->Color = 0x00553629;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+
+
+	ImageCAnvas->Canvas->FillRect(TRect(TPoint(radius,0),width - 2*radius,radius));
+	ImageCAnvas->Canvas->Ellipse(TRect(TPoint(0,0),2*radius,2*radius));
+	ImageCAnvas->Canvas->Ellipse(TRect(TPoint(width-2*radius,0),2*radius,2*radius));
+
+
+	ImageCAnvas->Canvas->Pen->Color= 0x00614438;
+	ImageCAnvas->Canvas->Brush->Color = 0x00614438;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+	ImageCAnvas->Canvas->FillRect(TRect(TPoint(0,radius),width,height-radius));
+}
+//---------------------------------------------------------------------------
+
+void TFormRound::CreateCanvas_Full()
+{
+	width = this->Width;
+	height = this->Height;
+	radius = this->Width/8;
+
+
+	ImageCAnvas->Canvas->Pen->Color= clWhite;
+	ImageCAnvas->Canvas->Brush->Color = 0x00614438;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+	ImageCAnvas->Canvas->FillRect(TRect(0,0,width,height));
+
+	ImageCAnvas->Canvas->Pen->Width = 3;
+	ImageCAnvas->Canvas->Pen->Color= 0x00553629;
+	ImageCAnvas->Canvas->Pen->Width = 1;
+	ImageCAnvas->Canvas->Brush->Color = 0x00553629;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+
+
+	ImageCAnvas->Canvas->FillRect(TRect(TPoint(radius,0),width - 2*radius,radius));
+	ImageCAnvas->Canvas->Ellipse(TRect(TPoint(0,0),2*radius,2*radius));
+	ImageCAnvas->Canvas->Ellipse(TRect(TPoint(width-2*radius,0),2*radius,2*radius));
+
+
+	ImageCAnvas->Canvas->Pen->Color= 0x00614438;
+	ImageCAnvas->Canvas->Brush->Color = 0x00614438;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+	ImageCAnvas->Canvas->FillRect(TRect(TPoint(0,radius),width,height-radius));
+}
+//---------------------------------------------------------------------------
+
+void TFormRound::CreateCanvas_Add(bool line)
+{
+	width = this->Width;
+	height = this->Height;
+	radius = this->Width/12;
+
+
+	ImageCAnvas->Canvas->Pen->Color= clWhite;
+	ImageCAnvas->Canvas->Brush->Color = 0x00614438;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+	ImageCAnvas->Canvas->FillRect(TRect(0,0,width,height));
+
+	ImageCAnvas->Canvas->Pen->Width = 3;
+	ImageCAnvas->Canvas->Pen->Color= 0x00553629;
+	ImageCAnvas->Canvas->Pen->Width = 1;
+	ImageCAnvas->Canvas->Brush->Color = 0x00553629;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+
+
+	ImageCAnvas->Canvas->FillRect(TRect(TPoint(radius,0),width - 2*radius,radius*2));
+	ImageCAnvas->Canvas->Ellipse(TRect(TPoint(0,0),2*radius,2*radius));
+	ImageCAnvas->Canvas->Ellipse(TRect(TPoint(width-2*radius,0),2*radius,2*radius));
+
+
+	ImageCAnvas->Canvas->Pen->Color= 0x00614438;
+	ImageCAnvas->Canvas->Brush->Color = 0x00614438;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+	ImageCAnvas->Canvas->FillRect(TRect(TPoint(0,radius),width,height-radius));
+
+	if(line){
+        ImageCAnvas->Canvas->Pen->Color= clWhite;
+		ImageCAnvas->Canvas->Pen->Width = 2;
+		ImageCAnvas->Canvas->Brush->Color = clWhite;
+		ImageCAnvas->Canvas->Brush->Style = bsSolid;
+		ImageCAnvas->Canvas->PenPos = TPoint(width/2,radius+10);
+		ImageCAnvas->Canvas->LineTo(width/2,height);
+	}
+}
+//---------------------------------------------------------------------------
+
+void TFormRound::Labeled(AnsiString text)
+{
+	LabelRound->Caption = text;
+	LabelRound->Top = radius/2 - LabelRound->Height/2;
+	LabelRound->Left = this->Width/2 - LabelRound->Width/2;
+}
+//---------------------------------------------------------------------------
+
+void TFormRound::Labeled_Add(AnsiString text)
+{
+	LabelRound->Caption = text;
+	LabelRound->Top = radius/2 - LabelRound->Height/2;
+	LabelRound->Left = this->Width/2 - LabelRound->Width/2;
+}
+//---------------------------------------------------------------------------
+
+void TFormRound::AddRect()
+{
+	ImageCAnvas->Canvas->Pen->Color= 0x00614438;
+	ImageCAnvas->Canvas->Brush->Color = 0x00614438;
+	ImageCAnvas->Canvas->Brush->Style = bsSolid;
+	ImageCAnvas->Canvas->FillRect(TRect(TPoint(0,radius),width,radius));
+}
+//---------------------------------------------------------------------------
+
+void TFormRound::Labeled_Full(AnsiString text)
+{
+	LabelRound->Caption = text;
+	LabelRound->Top = radius/2 - LabelRound->Height/2;
+	LabelRound->Left = this->Width/2 - LabelRound->Width/2;
+}
+//---------------------------------------------------------------------------

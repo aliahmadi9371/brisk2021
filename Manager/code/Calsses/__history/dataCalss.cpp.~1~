@@ -1,0 +1,80 @@
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.hpp>
+#pragma hdrstop
+
+#include "dataCalss.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+//---------------------------------------------------------------------------
+
+__fastcall DataCalss::DataCalss()
+{
+	bool_created = false;
+	BufSize = BufferSize;
+}
+//---------------------------------------------------------------------------
+
+double DataCalss::GetNewData(unsigned char data0,unsigned char data1,unsigned char data2,unsigned char data3,bool bits)
+{
+	unsigned char tmp1[4] ;
+	int tmp = 0 ;
+	memset(tmp1,0x00,4);
+
+	//32 bits to 24 bits
+	if(bits){
+		tmp1[1] = data0;
+		tmp1[2] = data1;
+		tmp1[3] = data2;
+		memcpy((void *)&tmp , (void *)tmp1 , 4);
+		tmp = tmp >> 8 ;
+	}
+	else{
+		tmp1[0] = data0;
+		tmp1[1] = data1;
+		tmp1[2] = data2;
+		tmp1[3] = data3;
+		memcpy((void *)&tmp , (void *)tmp1 , 4);
+	}
+
+	counter++;
+	double t = (double)tmp;
+	t = data_index * t + data_offset;
+	t = pow10l(data_scale*3) * t;
+	if(counter >= my_q_ptr->srDev){
+		counter = 0;
+		my_q_ptr->enqueue(t);
+	}
+	return t;
+}
+//---------------------------------------------------------------------------
+
+double DataCalss::Average()
+{
+	currAvg = data_buf[counter - 1];
+	currAvg = data_index * currAvg + data_offset;
+	if(data_scale != 0)
+		currAvg = pow10l(data_scale) * currAvg;
+
+	my_q_ptr->enqueue(currAvg);
+	return currAvg;
+}
+//---------------------------------------------------------------------------
+
+void DataCalss::setscale(int scale)
+{
+	data_scale = scale;
+}
+//---------------------------------------------------------------------------
+
+void DataCalss::CreateClass(queueClassUdp* q_ptr, double index, double offset, int scale)
+{
+    my_q_ptr = q_ptr;
+	counter = 0;
+	currAvg = 0;
+	data_index = index;
+	data_offset = offset;
+	data_scale = scale;
+	bool_created = true;
+}
+//---------------------------------------------------------------------------

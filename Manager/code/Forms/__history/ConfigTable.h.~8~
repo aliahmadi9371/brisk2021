@@ -1,0 +1,42 @@
+//---------------------------------------------------------------------------
+
+#ifndef ConfigTableH
+#define ConfigTableH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "RowConfigFrm.h"
+#include "OscConfigFrm.h"
+#include "AdvGlassButton.hpp"
+#include <Vcl.ExtCtrls.hpp>
+//---------------------------------------------------------------------------
+class TConfTable : public TForm
+{
+__published:	// IDE-managed Components
+	TScrollBox *ScrollBox1;
+	TPanel *HeaderPanel;
+	TAdvGlassButton *AdvGlassButton27;
+	TAdvGlassButton *AdvGlassButton28;
+	TAdvGlassButton *AdvGlassButton29;
+	TAdvGlassButton *AdvGlassButton30;
+	TAdvGlassButton *AdvGlassButton31;
+	void __fastcall FormShow(TObject *Sender);
+private:	// User declarations
+public:		// User declarations
+	__fastcall TConfTable(TComponent* Owner);
+
+	TRowFrm* myRows[7];
+    TOscConfigForm* myOscConfigFrm[28];
+
+	void InitValues();
+	void CreatObjects();
+
+    bool first;
+
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TConfTable *ConfTable;
+//---------------------------------------------------------------------------
+#endif

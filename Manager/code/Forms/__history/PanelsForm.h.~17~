@@ -1,0 +1,83 @@
+//---------------------------------------------------------------------------
+
+#ifndef PanelsFormH
+#define PanelsFormH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvScrollBox.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include "AdvGlowButton.hpp"
+#include "AdvPanel.hpp"
+#include "AdvGlassButton.hpp"
+#include <Vcl.Imaging.pngimage.hpp>
+//---------------------------------------------------------------------------
+class TCtrlForm : public TForm
+{
+__published:	// IDE-managed Components
+	TAdvScrollBox *PanelAdvScrollBox;
+	TPanel *MainPanel;
+	TDBAdvGlowButton *CtrlButton;
+	TDBAdvGlowButton *DncButton;
+	TDBAdvGlowButton *ApchButton;
+	TDBAdvGlowButton *ScanButton;
+	TDBAdvGlowButton *MovingButton;
+	TDBAdvGlowButton *SettingButton;
+	TDBAdvGlowButton *ForceSpecButton;
+	TAdvPanel *PanelTop;
+	TTimer *TimeTimer;
+	TAdvGlowButton *pOffBut;
+	TAdvGlassButton *DateTimeEdit;
+	TImage *ImageLogo;
+	TAdvGlassButton *StatusAdvEdit;
+	TTimer *Timer1;
+	void __fastcall CtrlButtonClick(TObject *Sender);
+	void __fastcall DncButtonClick(TObject *Sender);
+	void __fastcall ApchButtonClick(TObject *Sender);
+	void __fastcall ScanButtonClick(TObject *Sender);
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall MovingButtonClick(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall ForceSpecButtonClick(TObject *Sender);
+	void __fastcall SettingButtonClick(TObject *Sender);
+	void __fastcall pOffButClick(TObject *Sender);
+	void __fastcall TimeTimerTimer(TObject *Sender);
+	void __fastcall Timer1Timer(TObject *Sender);
+private:	// User declarations
+    unsigned int PanelPickIndex;
+public:		// User declarations            +
+	__fastcall TCtrlForm(TComponent* Owner);
+	void PickPanel(unsigned int pnl_index);
+
+	void LoadPictures();
+
+	TGDIPPicture* CtrlPanelPic;
+	TGDIPPicture* CtrlPanelPicHover;
+
+	TGDIPPicture* DncPanelPic;
+	TGDIPPicture* DncPanelPicHover;
+
+	TGDIPPicture* ApchPanelPic;
+	TGDIPPicture* ApchPanelPicHover;
+
+	TGDIPPicture* ScanPanelPic;
+	TGDIPPicture* ScanPanelPicHover;
+
+	TGDIPPicture* MovePanelPic;
+	TGDIPPicture* MovePanelPicHover;
+
+	TGDIPPicture* SettingPanelPic;
+	TGDIPPicture* SettingPanelPicHover;
+
+	TGDIPPicture* ForcePanelPic;
+	TGDIPPicture* ForcePanelPicHover;
+
+	bool ApproachingTogle;
+	bool ScaningTogle;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TCtrlForm *CtrlForm;
+//---------------------------------------------------------------------------
+#endif

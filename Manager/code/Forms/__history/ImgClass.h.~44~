@@ -1,0 +1,255 @@
+
+//---------------------------------------------------------------------------
+
+#ifndef ImgClassH
+#define ImgClassH
+
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvLabel.hpp"
+#include <VCLTee.Chart.hpp>
+#include <VCLTee.Series.hpp>
+#include <VclTee.TeeGDIPlus.hpp>
+#include <VCLTee.TeEngine.hpp>
+#include <VCLTee.TeeProcs.hpp>
+#include "VCLTee.TeeTools.hpp"
+#include "VCLTee.TeeSeriesBandTool.hpp"
+#include "FolderDialog.hpp"
+#include "AdvGlowButton.hpp"
+
+#include <math.h>
+//---------------------------------------------------------------------------
+class TImgForm : public TForm
+{
+__published:	// IDE-managed Components
+	TImage *MainImage;
+	TScrollBox *ScrollBox1;
+	TPanel *Panel1;
+	TPanel *Panel2;
+	TPanel *Panel3;
+	TPanel *Panel4;
+	TPanel *Panel5;
+	TPanel *Panel6;
+	TImage *Image1;
+	TImage *Image2;
+	TImage *Image4;
+	TImage *Image3;
+	TImage *Image5;
+	TImage *Image6;
+	TPanel *Panel7;
+	TPanel *Panel8;
+	TPanel *Panel9;
+	TPanel *Panel10;
+	TPanel *Panel11;
+	TPanel *Panel12;
+	TPanel *Panel13;
+	TPanel *Panel14;
+	TPanel *Panel15;
+	TPanel *Panel16;
+	TPanel *Panel17;
+	TPanel *Panel18;
+	TPanel *Panel19;
+	TPanel *Panel20;
+	TPanel *Panel21;
+	TPanel *Panel22;
+	TPanel *Panel23;
+	TPanel *Panel24;
+	TImage *Image7;
+	TImage *Image8;
+	TImage *Image9;
+	TImage *Image10;
+	TImage *Image11;
+	TImage *Image12;
+	TImage *Image13;
+	TImage *Image14;
+	TImage *Image15;
+	TImage *Image16;
+	TImage *Image17;
+	TImage *Image18;
+	TImage *Image19;
+	TImage *Image20;
+	TImage *Image21;
+	TImage *Image22;
+	TImage *Image23;
+	TImage *Image24;
+	TPanel *ImgPanel;
+	TPanel *CenterPanel;
+	TPanel *Panel25;
+	TImage *Image25;
+	TPanel *Panel26;
+	TImage *Image26;
+	TPanel *Panel27;
+	TImage *Image27;
+	TPanel *Panel28;
+	TImage *Image28;
+	TPanel *Panel29;
+	TImage *Image29;
+	TPanel *Panel30;
+	TImage *Image30;
+	TPanel *Panel31;
+	TImage *Image31;
+	TPanel *Panel32;
+	TImage *Image32;
+	TPanel *Panel33;
+	TImage *Image33;
+	TPanel *Panel34;
+	TImage *Image34;
+	TLabel *Label1;
+	TLabel *Label2;
+	TLabel *Label3;
+	TLabel *Label4;
+	TLabel *Label5;
+	TLabel *Label6;
+	TLabel *Label7;
+	TLabel *Label8;
+	TLabel *Label9;
+	TLabel *Label10;
+	TLabel *Label11;
+	TLabel *Label12;
+	TLabel *Label13;
+	TLabel *Label14;
+	TLabel *Label15;
+	TLabel *Label16;
+	TLabel *Label17;
+	TLabel *Label18;
+	TLabel *Label19;
+	TLabel *Label20;
+	TLabel *Label21;
+	TLabel *Label22;
+	TLabel *Label23;
+	TLabel *Label24;
+	TLabel *Label25;
+	TLabel *Label26;
+	TLabel *Label27;
+	TLabel *Label28;
+	TLabel *Label29;
+	TLabel *Label30;
+	TLabel *Label31;
+	TLabel *Label32;
+	TLabel *Label33;
+	TLabel *Label34;
+	TChart *TopoChart;
+	TFastLineSeries *TopoFWSeries;
+	TFastLineSeries *TopoBWSeries;
+	TColorLineTool *ChartTool2;
+	TAnnotationTool *ChartTool1;
+	TTimer *Timer1;
+	TLabel *ImageNameAdvLabel;
+	TAdvGlowButton *ChartButton;
+	TPanel *PanelImageNames;
+	TPanel *Panel36;
+	TPaintBox *PaintBox1;
+	TAdvGlowButton *SetAdvGlassButton;
+	TAdvGlowButton *SetFAdvGlassButton;
+	TScrollBox *ScrollBox2;
+	TTimer *PainBoxDblClickTimer;
+	TAdvGlowButton *SaveButton;
+
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+
+	void __fastcall Image1DblClick(TObject *Sender);
+	void __fastcall Image10DblClick(TObject *Sender);
+	void __fastcall Image11DblClick(TObject *Sender);
+	void __fastcall Image12DblClick(TObject *Sender);
+	void __fastcall Image13DblClick(TObject *Sender);
+	void __fastcall Image29DblClick(TObject *Sender);
+	void __fastcall Image27DblClick(TObject *Sender);
+	void __fastcall Image14DblClick(TObject *Sender);
+	void __fastcall Image15DblClick(TObject *Sender);
+	void __fastcall Image16DblClick(TObject *Sender);
+	void __fastcall Image17DblClick(TObject *Sender);
+	void __fastcall Image25DblClick(TObject *Sender);
+	void __fastcall Image32DblClick(TObject *Sender);
+	void __fastcall Image18DblClick(TObject *Sender);
+	void __fastcall Image24DblClick(TObject *Sender);
+	void __fastcall Image9DblClick(TObject *Sender);
+	void __fastcall Image8DblClick(TObject *Sender);
+	void __fastcall Image7DblClick(TObject *Sender);
+	void __fastcall Image6DblClick(TObject *Sender);
+	void __fastcall Image5DblClick(TObject *Sender);
+	void __fastcall Image4DblClick(TObject *Sender);
+	void __fastcall Image34DblClick(TObject *Sender);
+	void __fastcall Image33DblClick(TObject *Sender);
+	void __fastcall Image31DblClick(TObject *Sender);
+	void __fastcall Image30DblClick(TObject *Sender);
+	void __fastcall Image3DblClick(TObject *Sender);
+	void __fastcall Image28DblClick(TObject *Sender);
+	void __fastcall Image26DblClick(TObject *Sender);
+	void __fastcall Image23DblClick(TObject *Sender);
+	void __fastcall Image22DblClick(TObject *Sender);
+	void __fastcall Image21DblClick(TObject *Sender);
+	void __fastcall Image20DblClick(TObject *Sender);
+	void __fastcall Image2DblClick(TObject *Sender);
+	void __fastcall Image19DblClick(TObject *Sender);
+	void __fastcall ChartButtonClick(TObject *Sender);
+	void __fastcall TopoChartClickBackground(TCustomChart *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y);
+	void __fastcall TopoChartClickSeries(TCustomChart *Sender, TChartSeries *Series,
+          int ValueIndex, TMouseButton Button, TShiftState Shift, int X,
+          int Y);
+	void __fastcall Timer1Timer(TObject *Sender);
+	void __fastcall PaintBox1MouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall PaintBox1MouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall PaintBox1MouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
+	void __fastcall SetAdvGlassButtonClick(TObject *Sender);
+	void __fastcall PaintBox1DblClick(TObject *Sender);
+	void __fastcall SetFAdvGlassButtonClick(TObject *Sender);
+	void __fastcall PainBoxDblClickTimerTimer(TObject *Sender);
+	void __fastcall SaveButtonClick(TObject *Sender);
+	void __fastcall ScrollBox1MouseWheelDown(TObject *Sender, TShiftState Shift, TPoint &MousePos,
+          bool &Handled);
+	void __fastcall ScrollBox1MouseWheelUp(TObject *Sender, TShiftState Shift, TPoint &MousePos,
+          bool &Handled);
+
+
+
+//	void __fastcall SaveButtonClick(TObject *Sender);
+
+private:	// User declarations
+	void __fastcall ShowChart();
+
+public:		// User declarations
+	__fastcall TImgForm(TComponent* Owner);
+    void __fastcall ShowImages();
+	void ShowImageNumber();
+	double InterpolateTopoSeries(double XValue, bool fb);
+//	CoordinateClass* myCoordinateClass;
+//	Scan_cmdClass* myScan;
+
+	int IamgeIndex;
+    int LastIamgeIndex;
+
+	bool ChartImage;
+
+	bool fisrt;
+
+	bool ImageCanvasDraw;
+	int XStart;
+	int YStart;
+
+	bool set_selcet;
+
+	double new_center_x;
+	double new_center_y;
+	double new_range;
+
+	bool set_force;
+	double new_force_x;
+	double new_force_y;
+
+	bool select_litho;
+
+	void Togle1_2(bool lia);
+
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TImgForm *ImgForm;
+//---------------------------------------------------------------------------
+#endif

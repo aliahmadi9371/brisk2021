@@ -1,0 +1,67 @@
+//---------------------------------------------------------------------------
+
+#ifndef ControlFrmH
+#define ControlFrmH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include "AdvBadge.hpp"
+#include "AdvEdit.hpp"
+#include <Vcl.ExtCtrls.hpp>
+#include "UdpDataSendClass.h"
+#include "AdvCombo.hpp"
+//---------------------------------------------------------------------------
+class TPanelForm : public TForm
+{
+__published:	// IDE-managed Components
+	TAdvBadgeButton *AdvBadgeButtonStartApproach;
+	TAdvBadgeButton *AdvBadgeButtonStartScan;
+	TAdvEdit *AdvEditSpeed;
+	TAdvEdit *AdvEditCenterX;
+	TAdvEdit *AdvEditCenterY;
+	TAdvEdit *AdvEditAngle;
+	TAdvEdit *AdvEditRange;
+	TPanel *ScanPanel;
+	TPanel *ApproachPanel;
+	TAdvEdit *AdvEditOverScan;
+	TCheckBox *fast_checkbox;
+	TMemo *Memo1;
+	TAdvBadgeButton *AdvBadgeButtonStopScan;
+	TMemo *Memo2;
+	TAdvComboBox *AdvComboBoxResolution;
+	TMemo *Memo3;
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall AdvBadgeButtonStartApproachClick(TObject *Sender);
+	void __fastcall AdvBadgeButtonStartScanClick(TObject *Sender);
+	void __fastcall AdvBadgeButtonStopScanClick(TObject *Sender);
+private:	// User declarations
+	bool start;
+	void __fastcall SendPacket();
+	void __fastcall StartScan();
+	void __fastcall FinalizingImage();
+public:		// User declarations
+	__fastcall TPanelForm(TComponent* Owner);
+	int getTcpPacketLine(int myMode);
+
+	UdpDataSendClass* myUdpDataSendClass;
+
+	void EnableScanPanel(bool enabled);
+	void EnableApproachPanel(bool enabled);
+
+	bool scanning;
+
+	bool approached;
+	bool approaching;
+	bool FarNear;
+	int StatusFarNear;
+	bool fast;
+	bool StartApproach;
+	int CountFarNear;
+	int resolution;
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TPanelForm *PanelForm;
+//---------------------------------------------------------------------------
+#endif

@@ -1,0 +1,805 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "LithoConfigPage.h"
+#include "mainUnit.h"
+#include "LitoFileCreatorUnit.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "AdvGlassButton"
+#pragma link "CurvyControls"
+#pragma link "AdvGlowButton"
+#pragma link "AdvWiiProgressBar"
+#pragma resource "*.dfm"
+
+//---------------------------------------------------------------------------
+__fastcall TFormLithoConfig::TFormLithoConfig(TComponent* Owner)
+	: TForm(Owner)
+{
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::FormCreate(TObject *Sender)
+{
+	this->Hide();
+
+    InitClass();
+	ConfigClass();
+
+	changeRes = false;
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::InitClass()
+{
+	scan_resolution = 0;
+	scan_speed = 0;
+	scan_overscan = 0;
+	scan_x_center = 0;
+	scan_y_center = 0;
+	litho_delay = 0;
+	litho_startstop = false;
+	litho_select = false;
+	first = false;
+
+	LastLithoChanger = 0;
+	firstFirst = false;
+}
+//---------------------------------------------------------------------------
+double TFormLithoConfig::Regression(double First , double Second , double diff)
+{
+	double Final = First + (Second - First) * diff ;
+	return Final;
+}
+
+//---------------------------------------------------------------------------
+void TFormLithoConfig::ConfigClass()
+{
+
+
+	//from scan
+	scan_resolution = ScanTable.Scan_Resolution_Val;
+	scan_range = ScanTable.Scan_Range_Val;
+	scan_overscan = ScanTable.Scan_OverScan_Val;
+	scan_speed = ScanTable.Scan_Speed_Val;
+	scan_x_center = ScanTable.Scan_X_Center_Val;
+	scan_y_center = ScanTable.Scan_Y_Center_Val;
+	scan_max_range = HardwareTable.Max_Range;
+
+	if(scan_x_center > scan_max_range/2) scan_x_center = scan_max_range/2;
+	if(scan_x_center < -scan_max_range/2) scan_x_center = -scan_max_range/2;
+
+
+	if(scan_y_center > scan_max_range/2) scan_y_center = scan_max_range/2;
+	if(scan_y_center < -scan_max_range/2) scan_y_center = -scan_max_range/2;
+
+
+	if(scan_range > scan_max_range) scan_range = scan_max_range;
+	if(scan_range < 0) scan_range = 0;
+
+
+	int overscan_tmp = floor( (scan_overscan * scan_resolution) + 0.5 );
+	if(overscan_tmp == 0){
+		scan_overscan = 1;
+		ScanTable.Scan_OverScan_Val = scan_overscan;
+		mainForm->myDataBase->Execute(mainForm->myDataBase->myQuery->Update("SCAN_CONFIG"));
+	}
+
+	//from litho
+	litho_delay = LithoTable.Litho_Delay;
+
+
+	AdvEditCenterX->Text = FloatToStr(scan_x_center);
+	AdvEditCenterY->Text = FloatToStr(scan_y_center);
+	AdvEditRange->Text = FloatToStr(scan_range);
+	AdvEditOverScan->Text = IntToStr(scan_overscan);
+	AdvEditDelay->Text = IntToStr(litho_delay);
+	GetResolution();
+
+	X_Calibration();
+	Y_Calibration();
+	Range_Calibration();
+
+	if(!AllScale){
+		AdvEditCenterXLbl->Caption = "Center-X (%)";
+		AdvEditCenterYLbl->Caption = "Center-Y (%)";
+		AdvEditRangeLbl->Caption = "Range (%)";
+		AdvEditRange->Text = FloatToStr(scan_range);
+		AdvEditCenterX->Text = FloatToStr(scan_x_center);
+		AdvEditCenterY->Text = FloatToStr(scan_y_center);
+	}
+	else{
+		AdvEditCenterXLbl->Caption = "Center-X (um)";
+		AdvEditCenterYLbl->Caption = "Center-Y (um)";
+		AdvEditRangeLbl->Caption = "Range (um)";
+    }
+
+	AllEditWhite();
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::RunAdvGlassButtonClick(TObject *Sender)
+{
+//	AllEditWhite();
+	mainForm->LogToFile("TFormLithoConfig::RunAdvGlassButtonClick , litho_select = " + BoolToStr(litho_select,true));
+	if(!litho_select){
+		if(hid != 0 && sid == 2021){
+			litho_select = true;
+			litho_startstop = true;
+			EnabledPanels(2);
+	//		EnabledPanels(1);
+        }
+	}
+	else{
+		litho_select = false;
+		litho_startstop = false;
+		EnabledPanels(0);
+	}
+	TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::GetResolution()
+{
+	mainForm->LogToFile("TFormLithoConfig::GetResolution");
+	AdvComboBoxResolution->Items->Clear();
+	int n = mainForm->myScanPanelForm->AdvComboBoxResolution->Items->Count;
+	int m = mainForm->myScanPanelForm->AdvComboBoxResolution->ItemIndex;
+
+//	int t = n - m;
+
+//	mainForm->LogToFile("Count : " + IntToStr(n));
+//	mainForm->LogToFile("ItemIndex : " + IntToStr(m));
+//	mainForm->LogToFile("n - m : " + IntToStr(t));
+
+	UnicodeString tmp;
+
+	for(int i = m; i<n; i++){
+		tmp = mainForm->myScanPanelForm->AdvComboBoxResolution->Items->operator [](i);
+//		mainForm->LogToFile(IntToStr(i) + " - " + tmp);
+		AdvComboBoxResolution->Items->Append(tmp);
+	}
+
+
+	AdvComboBoxResolution->ItemIndex = 0;
+	scan_resolution = AdvComboBoxResolution->Items->operator [](0).ToInt();
+
+//	AdvComboBoxResolutionChange(NULL);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::StartLitho()
+{
+	mainForm->LogToFile("TFormLithoConfig::StartLitho");
+	mainForm->myCommandCreatorThread->StartLitho(scan_resolution,
+												 scan_speed,
+												 scan_overscan,
+												 scan_x_center,
+												 scan_y_center,
+												 scan_Xrange,
+												 scan_Yrange,
+												 litho_delay,
+												 litho_startstop,
+												 LastLithoChanger);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::FormShow(TObject *Sender)
+{
+	if(!first){
+
+		int w_this = this->Parent->Width;
+		int h_this = this->Parent->Height;
+
+		int Top = 10;
+        int l = 260;
+		int p = 30;
+
+		int left1 =  10;
+		int left2 = w_this - 10 - 260;
+
+        Panel1->Left = left1;
+		Panel1->Top = Top + 10;
+		Panel1->Width = l;
+		Panel1->Height = p;
+		Panel1->BringToFront();
+//
+		Panel2->Left = left1;
+		Panel2->Top = Panel1->Top + 40;
+		Panel2->Width = l;
+		Panel2->Height = p;
+		Panel2->BringToFront();
+//
+		Panel3->Left = left1;
+		Panel3->Top = Panel2->Top + 40;
+		Panel3->Width = l;
+		Panel3->Height = p;
+		Panel3->BringToFront();
+//
+		Panel4->Left = left2;
+		Panel4->Top = Panel1->Top;
+		Panel4->Width = l;
+		Panel4->Height = p;
+		Panel4->BringToFront();
+//
+		Panel5->Left = left2;
+		Panel5->Top = Panel4->Top + 40;
+		Panel5->Width = l;
+		Panel5->Height = p;
+		Panel5->BringToFront();
+//
+		Panel6->Left = left2;
+		Panel6->Top = Panel5->Top;
+		Panel6->Width = l;
+		Panel6->Height = p;
+		Panel6->BringToFront();
+
+
+		RunAdvGlassButton->Left = left2;
+		RunAdvGlassButton->Top = Panel6->Top + 40;
+		RunAdvGlassButton->Width = l;
+		RunAdvGlassButton->Height = p;
+
+		AdvWiiProgressBar->Left = w_this/2 - AdvWiiProgressBar->Width/2;
+		AdvWiiProgressBar->Top = h_this/2 - AdvWiiProgressBar->Height/2;
+
+		Label1->Left = w_this/2  - Label1->Width/2 ;
+		Label1->Top = h_this/2 - AdvWiiProgressBar->Height/2 + AdvWiiProgressBar->Height + 5;
+//		Label1->Width = AdvWiiProgressBar->Width;
+
+		first = true;
+		changeRes = false;
+
+
+//		AdvComboBoxResolutionChange(NULL);
+	}
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::EnabledPanels(int state)
+{
+	mainForm->LogToFile("TFormLithoConfig::EnabledPanels , state = " + IntToStr(state));
+	switch(state){
+		case 0:{
+			RunAdvGlassButton->Enabled = true;
+			UpDownBorder(RunAdvGlassButton->Appearance, true);
+			this->Enabled = true;
+			Panel1->Enabled = true;
+			Panel2->Enabled = true;
+			Panel3->Enabled = true;
+			Panel4->Enabled = true;
+			Panel5->Enabled = true;
+			Panel6->Enabled = true;
+			RunAdvGlassButton->Caption = "Start Lithography";
+			break;
+		}
+		case 1:{
+			RunAdvGlassButton->Enabled = true;
+			UpDownBorder(RunAdvGlassButton->Appearance, false);
+			this->Enabled = true;
+			Panel1->Enabled = false;
+			Panel2->Enabled = false;
+			Panel3->Enabled = false;
+			Panel4->Enabled = false;
+			Panel5->Enabled = false;
+			Panel6->Enabled = false;
+			RunAdvGlassButton->Caption = "Stop Lithography";
+			break;
+		}
+		case 2:{
+			RunAdvGlassButton->Enabled = false;
+			UpDownBorder(RunAdvGlassButton->Appearance, false);
+			this->Enabled = false;
+			RunAdvGlassButton->Caption = "... Lithography ...";
+			break;
+		}
+		default:{
+
+			break;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::UpDownBorder(TGlowButtonAppearance* appearance, bool UpDown)
+{
+
+	if(UpDown){
+		appearance->BorderColor = TColor(0x00614438);
+		appearance->BorderColorHot = TColor(0x00614438);
+		appearance->BorderColorChecked = TColor(0x00614438);
+		appearance->BorderColorCheckedHot = TColor(0x00614438);
+		appearance->BorderColorDisabled = TColor(0x00614438);
+		appearance->BorderColorFocused = TColor(0x00614438);
+		appearance->BorderColorDown = TColor(0x00614438);
+	}
+	else{
+		appearance->BorderColor = TColor(0x00F0D27D);
+		appearance->BorderColorHot = TColor(0x00F0D27D0);
+		appearance->BorderColorChecked = TColor(0x00F0D27D);
+		appearance->BorderColorCheckedHot = TColor(0x00F0D27D);
+		appearance->BorderColorDisabled = TColor(0x00F0D27D);
+		appearance->BorderColorFocused = TColor(0x00F0D27D);
+		appearance->BorderColorDown = TColor(0x00F0D27D);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditCenterXKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TFormLithoConfig::AdvEditCenterXKeyPress");
+		AdvEditCenterX->Color = clWhite;
+		LastLithoChanger = 0;
+		scan_x_center = AdvEditCenterX->Text.ToDouble();
+		if(AllScale){
+			if(scan_x_center > scan_max_range/2) scan_x_center = scan_max_range/2;
+			if(scan_x_center < -scan_max_range/2) scan_x_center = -scan_max_range/2;
+
+			if(scan_x_center<10 && scan_x_center>-10){
+				int X = scan_x_center*1000;
+				scan_x_center = (double)X/1000;
+			}
+			AdvEditCenterX->Text = FloatToStr(scan_x_center);
+
+			X_Calibration();
+		}
+		else{
+			if(scan_x_center>100) scan_x_center = 100;
+			if(scan_x_center<0) scan_x_center = 0;
+
+			if(scan_x_center<10 && scan_x_center>-10){
+				int X = scan_x_center*1000;
+				scan_x_center = (double)X/1000;
+			}
+			AdvEditCenterX->Text = FloatToStr(scan_x_center);
+			AdvEditCenterX->Color = clWhite;
+		}
+
+		mainForm->Lithoing = false;
+		litho_startstop = false;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+		EnabledPanels(0);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditCenterYKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+//		AllEditWhite();
+		mainForm->LogToFile("TFormLithoConfig::AdvEditCenterYKeyPress");
+		AdvEditCenterY->Color = clWhite;
+		LastLithoChanger = 1;
+		scan_y_center = AdvEditCenterY->Text.ToDouble();
+		if(AllScale){
+			if(scan_y_center > scan_max_range/2) scan_y_center = scan_max_range/2;
+			if(scan_y_center < -scan_max_range/2) scan_y_center = -scan_max_range/2;
+
+			if(scan_y_center<10 && scan_y_center>-10){
+				int Y = scan_y_center*1000;
+				scan_y_center = (double)Y/1000;
+			}
+			AdvEditCenterY->Text = FloatToStr(scan_y_center);
+			AdvEditCenterY->Color = clWhite;
+
+			Y_Calibration();
+		}
+        else{
+			if(scan_y_center>100) scan_y_center = 100;
+			if(scan_y_center<0) scan_y_center = 0;
+
+			if(scan_y_center<10 && scan_y_center>-10){
+				int Y = scan_y_center*1000;
+				scan_y_center = (double)Y/1000;
+			}
+			AdvEditCenterY->Text = FloatToStr(scan_y_center);
+			AdvEditCenterY->Color = clWhite;
+		}
+		mainForm->Lithoing = false;
+		litho_startstop = false;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+		EnabledPanels(0);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditRangeKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+//		AllEditWhite();
+		mainForm->LogToFile("TFormLithoConfig::AdvEditRangeKeyPress");
+		AdvEditRange->Color = clWhite;
+		LastLithoChanger = 2;
+		scan_range = AdvEditRange->Text.ToDouble();
+		if(AllScale){
+			if(scan_range > scan_max_range) scan_range = scan_max_range;
+			if(scan_range < 0) scan_range = 0;
+			if(scan_range<10){
+				int R = scan_range*1000;
+				scan_range = (double)R/1000;
+			}
+
+			AdvEditRange->Text = FloatToStr(scan_range);
+			Range_Calibration();
+		}
+		else{
+			if(scan_range > 100) scan_range = 100;
+			if(scan_range < 0) scan_range = 0;
+			if(scan_range<10){
+				int R = scan_range*1000;
+				scan_range = (double)R/1000;
+			}
+			AdvEditRange->Text = FloatToStr(scan_range);
+			scan_Xrange = scan_range;
+			scan_Yrange = scan_range;
+		}
+
+		AdvEditRange->Color = clWhite;
+		mainForm->Lithoing = false;
+		litho_startstop = false;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+		EnabledPanels(0);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditDelayKeyPress(TObject *Sender, System::WideChar &Key)
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TFormLithoConfig::AdvEditDelayKeyPress");
+//		AllEditWhite();
+		litho_delay = AdvEditDelay->Text.ToInt();
+		AdvEditDelay->Color = clWhite;
+		ScanTable.LITHO_CONFIG = litho_delay;
+		mainForm->myDataBase->Execute(mainForm->myDataBase->myQuery->Update("SCAN_CONFIG"));
+
+		mainForm->Lithoing = false;
+		litho_startstop = false;
+		TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+		EnabledPanels(0);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvComboBoxResolutionChange(TObject *Sender)
+{
+	mainForm->LogToFile("TFormLithoConfig::AdvComboBoxResolutionChange");
+	mainForm->myLithoFrm->LithoDesignFrm->myPaintForm->BitMapSaved = false;
+	this->Enabled = false;
+	scan_resolution = AdvComboBoxResolution->Items->operator [](AdvComboBoxResolution->ItemIndex).ToInt();
+	LastLithoChanger = 3;
+
+	mainForm->Lithoing = false;
+	litho_startstop = false;
+
+	//create file
+
+
+
+	myLithoThread = new LithoFileCreatorThread(true);
+	myLithoThread->Priority = tpNormal;
+	myLithoThread->FreeOnTerminate = true;
+
+//	myLithoThread->litho_file = true;
+//	myLithoThread->Start();
+////
+	AdvWiiProgressBar->Show();
+////
+//	while(myLithoThread->litho_file && !myLithoThread->progress){
+//		Application->ProcessMessages();
+//	}
+
+	mainForm->myLithoFrm->LithoDesignFrm->Image->Picture = NULL;
+	mainForm->myLithoFrm->LithoDesignFrm->myPaintForm->Image->Picture = NULL;
+	mainForm->myLithoFrm->LithoDesignFrm->myPaintForm->InitPaint();
+	mainForm->myLithoFrm->LithoDesignFrm->InitPaint(false);
+
+	TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+
+	AdvWiiProgressBar->Hide();
+	EnabledPanels(0);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditOverScanKeyPress(TObject *Sender, System::WideChar &Key)
+{
+	if(Key == VK_RETURN){
+		mainForm->LogToFile("TFormLithoConfig::AdvEditOverScanKeyPress");
+		scan_overscan = AdvEditOverScan->Text.ToInt();
+		LastLithoChanger = 4;
+		if(scan_overscan < 0) scan_overscan = 0;
+		if(scan_overscan > 100) scan_overscan = 100;
+		AdvEditOverScan->Text = IntToStr(scan_overscan);
+
+		mainForm->Lithoing = false;
+		litho_startstop = false;
+
+		TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+		EnabledPanels(0);
+//		StartLitho();
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void TFormLithoConfig::HighLightChanger(int Changer, bool highlight)
+{
+	mainForm->LogToFile("TFormLithoConfig::HighLightChanger , highlight = " + BoolToStr(highlight,true) + " , Changer = " + IntToStr(Changer));
+	if(highlight){
+		switch(Changer){
+			case 0:{
+//				mainForm->LogToFile("highlight res");
+				AdvComboBoxResolution->Color = clWhite;
+				AdvEditOverScan->Color = clWhite;
+				AdvEditRange->Color = clWhite;
+				AdvEditCenterX->Color = clRed;
+				AdvEditCenterY->Color = clWhite;
+				break;
+			}
+			case 1:{
+//				mainForm->LogToFile("highlight res");
+				AdvComboBoxResolution->Color = clWhite;
+				AdvEditOverScan->Color = clWhite;
+				AdvEditRange->Color = clWhite;
+				AdvEditCenterX->Color = clWhite;
+				AdvEditCenterY->Color = clRed;
+				break;
+			}
+			case 2:{
+//				mainForm->LogToFile("highlight range");
+				AdvComboBoxResolution->Color = clWhite;
+				AdvEditOverScan->Color = clWhite;
+				AdvEditRange->Color = clRed;
+				AdvEditCenterX->Color = clWhite;
+				AdvEditCenterY->Color = clWhite;
+				break;
+			}
+			case 3:{
+//				mainForm->LogToFile("highlight over scan");
+				AdvComboBoxResolution->Color = clRed;
+				AdvEditOverScan->Color = clWhite;
+				AdvEditRange->Color = clWhite;
+				AdvEditCenterX->Color = clWhite;
+				AdvEditCenterY->Color = clWhite;
+				break;
+			}
+			case 4:{
+//				mainForm->LogToFile("highlight over scan");
+				AdvComboBoxResolution->Color = clWhite;
+				AdvEditOverScan->Color = clRed;
+				AdvEditRange->Color = clWhite;
+				AdvEditCenterX->Color = clWhite;
+				AdvEditCenterY->Color = clWhite;
+				break;
+			}
+			case 5:{
+//				mainForm->LogToFile("highlight over scan");
+				AdvComboBoxResolution->Color = clWhite;
+				AdvEditOverScan->Color = clRed;
+				AdvEditRange->Color = clRed;
+				AdvEditCenterX->Color = clRed;
+				AdvEditCenterY->Color = clRed;
+				break;
+			}
+			default:{
+				break;
+			}
+		}
+	}
+	else{
+//		mainForm->LogToFile("highlight none");
+		if(AdvComboBoxResolution->Color == clRed)
+			AdvComboBoxResolution->Color = clWhite;
+		if(AdvEditOverScan->Color == clRed)
+			AdvEditOverScan->Color = clWhite;
+		if(AdvEditRange->Color == clRed)
+			AdvEditRange->Color = clWhite;
+		if(AdvEditCenterX->Color == clRed)
+			AdvEditCenterX->Color = clWhite;
+		if(AdvEditCenterY->Color == clRed)
+			AdvEditCenterY->Color = clWhite;
+	}
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::AdvEditChange(int x, int y, int range)
+{
+	mainForm->LogToFile("TFormLithoConfig::AdvEditChange");
+	if(AllScale){
+		//center x
+		scan_x_center = x;
+		if(scan_x_center > scan_max_range/2) scan_x_center = scan_max_range/2;
+		if(scan_x_center < -scan_max_range/2) scan_x_center = -scan_max_range/2;
+		if(scan_x_center<10 && scan_x_center>-10){
+			int X = scan_x_center*1000;
+			scan_x_center = (double)X/1000;
+		}
+		AdvEditCenterX->Text = FloatToStr(scan_x_center);
+		AdvEditCenterX->Color = clWhite;
+		X_Calibration();
+
+
+		//center y
+		scan_y_center = y;
+		if(scan_y_center > scan_max_range/2) scan_y_center = scan_max_range/2;
+		if(scan_y_center < -scan_max_range/2) scan_y_center = -scan_max_range/2;
+		if(scan_y_center<10 && scan_y_center>-10){
+			int Y = scan_y_center*1000;
+			scan_y_center = (double)Y/1000;
+		}
+		AdvEditCenterY->Text = FloatToStr(scan_y_center);
+		AdvEditCenterY->Color = clWhite;
+		Y_Calibration();
+
+		//range
+		scan_range = range;
+		if(scan_range > scan_max_range) scan_range = scan_max_range;
+		if(scan_range < 0) scan_range = 0;
+		if(scan_range<10){
+			int R = scan_range*1000;
+			scan_range = (double)R/1000;
+		}
+		AdvEditRange->Text = FloatToStr(scan_range);
+		AdvEditRange->Color = clWhite;
+		Range_Calibration();
+	}
+    else{
+		scan_x_center = x;
+		if(scan_x_center>100) scan_x_center = 100;
+		if(scan_x_center<0) scan_x_center = 0;
+
+		if(scan_x_center<10 && scan_x_center>-10){
+			int X = scan_x_center*1000;
+			scan_x_center = (double)X/1000;
+		}
+
+		AdvEditCenterX->Text = FloatToStr(scan_x_center);
+		AdvEditCenterX->Color = clWhite;
+
+		// y center
+		scan_y_center = y;
+		if(scan_y_center>100) scan_y_center = 100;
+		if(scan_y_center<0) scan_y_center = 0;
+
+		if(scan_y_center<10 && scan_y_center>-10){
+			int Y = scan_y_center*1000;
+			scan_y_center = (double)Y/1000;
+		}
+
+		//range
+		scan_range = range;
+		if(scan_range > 100) scan_range = 100;
+		if(scan_range < 0) scan_range = 0;
+		if(scan_range<10){
+			int R = scan_range*1000;
+			scan_range = (double)R/1000;
+		}
+
+	}
+	mainForm->Lithoing = false;
+	litho_startstop = false;
+	TThread::Synchronize(mainForm->myCommandCreatorThread,StartLitho);
+	EnabledPanels(0);
+}
+//---------------------------------------------------------------------------
+void __fastcall TFormLithoConfig::AdvEditCenterXChange(TObject *Sender)
+{
+	   AdvEditCenterX->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditCenterYChange(TObject *Sender)
+{
+	   AdvEditCenterY->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditRangeChange(TObject *Sender)
+{
+	   AdvEditRange->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditOverScanChange(TObject *Sender)
+{
+	   AdvEditOverScan->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TFormLithoConfig::AdvEditDelayChange(TObject *Sender)
+{
+	   AdvEditDelay->Color = clSilver;
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::AllEditWhite()
+{
+
+	AdvEditCenterX->Color = clWhite;
+	AdvEditCenterY->Color = clWhite;
+	AdvEditRange->Color = clWhite;
+	AdvEditOverScan->Color = clWhite;
+	AdvEditDelay->Color = clWhite;
+
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::X_Calibration(){
+
+	mainForm->LogToFile("TFormLithoConfig::X_Calibration");
+	double CenterXX = abs(scan_x_center);
+	double X1_Center = mainForm->X_Range[(int)CenterXX];
+	double X2_Center = mainForm->X_Range[(int)CenterXX+1];
+
+	if((int)CenterXX < CenterXX){
+	   double diff = CenterXX - (int)CenterXX;
+	   CenterXX = Regression(X1_Center,X2_Center,diff);
+	}
+	else{
+		CenterXX = X1_Center;
+	}
+
+	if(scan_x_center>0) scan_x_center = 50 + CenterXX;
+	else scan_x_center = 50 - CenterXX;
+
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::Y_Calibration(){
+
+	mainForm->LogToFile("TFormLithoConfig::Y_Calibration");
+	double CenterYY = abs(scan_y_center);
+	double Y1_Center = mainForm->Y_Range[(int)CenterYY];
+	double Y2_Center = mainForm->Y_Range[(int)CenterYY+1];
+
+
+	if((int)CenterYY < CenterYY){
+	   double diff = CenterYY - (int)CenterYY;
+	   CenterYY = Regression(Y1_Center,Y2_Center,diff);
+	}
+	else{
+		CenterYY = Y1_Center;
+	}
+
+	if(scan_y_center>0) scan_y_center = 50 + CenterYY;
+	else scan_y_center = 50 - CenterYY;
+}
+//---------------------------------------------------------------------------
+
+void TFormLithoConfig::Range_Calibration(){
+
+	mainForm->LogToFile("TFormLithoConfig::Range_Calibration");
+	double X1_Range = mainForm->X_Range[(int)scan_range];
+	double X2_Range = mainForm->X_Range[(int)scan_range+1];
+	double Y1_Range = mainForm->Y_Range[(int)scan_range];
+	double Y2_Range = mainForm->Y_Range[(int)scan_range+1];
+
+
+	if((int)scan_range < scan_range){
+	   double diff = scan_range - (int)scan_range;
+	   scan_Xrange = Regression(X1_Range,X2_Range,diff);
+	   scan_Yrange = Regression(Y1_Range,Y2_Range,diff);
+	}
+	else{
+		scan_Xrange = X1_Range;
+		scan_Yrange = Y1_Range;
+	}
+    if(!AllScale){
+		if(scan_Xrange < scan_Yrange){
+			scan_Yrange = scan_Xrange;
+			scan_range = scan_Yrange;
+		}
+		else{
+			scan_Xrange = scan_Yrange;
+			scan_range = scan_Xrange;
+		}
+	}
+}

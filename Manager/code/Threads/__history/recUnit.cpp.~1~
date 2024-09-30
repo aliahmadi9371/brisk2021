@@ -1,0 +1,101 @@
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.hpp>
+#pragma hdrstop
+
+#include "recUnit.h"
+#pragma package(smart_init)
+#include "mainUnit.h"
+#include "globals.h"
+//---------------------------------------------------------------------------
+
+//   Important: Methods and properties of objects in VCL can only be
+//   used in a method called using Synchronize, for example:
+//
+//      Synchronize(&UpdateCaption);
+//
+//   where UpdateCaption could look like:
+//
+//      void __fastcall recUnit::UpdateCaption()
+//      {
+//        Form1->Caption = "Updated in a thread";
+//      }
+//---------------------------------------------------------------------------
+
+__fastcall recUnit::recUnit(bool CreateSuspended)
+	: TThread(CreateSuspended)
+{
+
+}
+//---------------------------------------------------------------------------
+
+__fastcall recUnit::~recUnit()
+{
+	thread_started = false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall recUnit::Execute()
+{
+	NameThreadForDebugging(System::String(L"record"));
+	//---- Place thread code here ----
+
+	thread_stop = false;
+	thread_started = false;
+	TDateTime dateTime;
+	UnicodeString dt = dateTime.CurrentDateTime().FormatString("yyyymmdd_hhMMss");
+	if(DirectoryExists("data"))
+		source = "data/" + dt + ".afm";
+	else{
+		AnsiString dir = "data";
+		CreateDirectoryA(dir.c_str(),NULL);
+		source = "data/" + dt + ".afm";
+	}
+	pm = source;
+	Synchronize(&saveFile);
+	file = new TFileStream(source,fmCreate);
+	pm = "new file in thread ... ";
+	Synchronize(&saveFile);
+	my_rec_queueClass = new rec_queueClass(1000);
+	thread_started = true;
+    pm = "start recording in thread";
+	Synchronize(&saveFile);
+
+	while(1){
+		while(thread_started){
+			if(!(my_rec_queueClass->isEmpty())){
+				DynamicArray<Byte> tmp = my_rec_queueClass->peek();
+				file->WriteData(tmp,tmp.Length);
+				my_rec_queueClass->dequeue();
+			}
+			if(finishing){
+				pm = "finishing recording REC ";
+				Synchronize(&saveFile);
+				while(!(my_rec_queueClass->isEmpty())){
+					DynamicArray<Byte> tmp = my_rec_queueClass->peek();
+					file->WriteData(tmp,tmp.Length);
+					my_rec_queueClass->dequeue();
+				}
+				file->Free();
+				thread_started = false;
+				thread_stop = true;
+
+                return;
+			}
+//			Application->ProcessMessages();
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void recUnit::StopRecod()
+{
+	finishing = true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall recUnit::saveFile()
+{
+//	mainForm->Memo1->Lines->Add(pm);
+}
+//---------------------------------------------------------------------------

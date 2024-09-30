@@ -1,0 +1,22 @@
+//---------------------------------------------------------------------------
+
+#ifndef ConfigTableH
+#define ConfigTableH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+//---------------------------------------------------------------------------
+class TConTable : public TForm
+{
+__published:	// IDE-managed Components
+	TScrollBox *ScrollBox1;
+private:	// User declarations
+public:		// User declarations
+	__fastcall TConTable(TComponent* Owner);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TConTable *ConTable;
+//---------------------------------------------------------------------------
+#endif

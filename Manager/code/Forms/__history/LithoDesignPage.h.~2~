@@ -1,0 +1,54 @@
+//---------------------------------------------------------------------------
+
+#ifndef LithoDesignPageH
+#define LithoDesignPageH
+//---------------------------------------------------------------------------
+#include <System.Classes.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.ExtCtrls.hpp>
+#include "AdvGlowButton.hpp"
+#include <Vcl.Dialogs.hpp>
+#include <Vcl.ExtDlgs.hpp>
+
+//---------------------------------------------------------------------------
+class TFormLithoDesign : public TForm
+{
+__published:	// IDE-managed Components
+	TPanel *PanelPaint;
+	TAdvGlowButton *ImportButton;
+	TOpenPictureDialog *OpenPictureDialog;
+	TImage *Image;
+	void __fastcall FormCreate(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall ImportButtonClick(TObject *Sender);
+	void __fastcall ImageMouseDown(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+	void __fastcall ImageMouseMove(TObject *Sender, TShiftState Shift, int X, int Y);
+	void __fastcall ImageMouseUp(TObject *Sender, TMouseButton Button, TShiftState Shift,
+          int X, int Y);
+
+private:	// User declarations
+public:		// User declarations
+	__fastcall TFormLithoDesign(TComponent* Owner);
+
+
+	void InitValues();
+	void CreateObjects();
+	void ConfigClass();
+
+	bool first;
+
+
+	bool select;
+	bool drag;
+	int x;
+	int y;
+
+
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TFormLithoDesign *FormLithoDesign;
+//---------------------------------------------------------------------------
+#endif

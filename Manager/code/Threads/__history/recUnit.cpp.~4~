@@ -1,0 +1,123 @@
+//---------------------------------------------------------------------------
+#include <vcl.h>
+#include <System.hpp>
+#pragma hdrstop
+
+#include "recUnit.h"
+#pragma package(smart_init)
+#include "mainUnit.h"
+#include "globals.h"
+//---------------------------------------------------------------------------
+
+//   Important: Methods and properties of objects in VCL can only be
+//   used in a method called using Synchronize, for example:
+//
+//      Synchronize(&UpdateCaption);
+//
+//   where UpdateCaption could look like:
+//
+//      void __fastcall recUnit::UpdateCaption()
+//      {
+//        Form1->Caption = "Updated in a thread";
+//      }
+//---------------------------------------------------------------------------
+
+__fastcall recUnit::recUnit(bool CreateSuspended)
+	: TThread(CreateSuspended)
+{
+
+}
+//---------------------------------------------------------------------------
+
+__fastcall recUnit::~recUnit()
+{
+	thread_started = false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall recUnit::Execute()
+{
+	NameThreadForDebugging(System::String(L"record"));
+	//---- Place thread code here ----
+
+	thread_stop = false;
+	thread_started = false;
+	TDateTime dateTime;
+	UnicodeString time = dateTime.CurrentDateTime().FormatString("hhMMss");
+	UnicodeString date = dateTime.CurrentDateTime().FormatString("yyyymmdd");
+	if( !DirectoryExists("records/") ){
+		AnsiString dir = "records/";
+		CreateDirectoryA(dir.c_str(),NULL);
+	}
+	switch(mainForm->AppMode){
+		case 1:{
+			if( !DirectoryExists("records/Contact/") ){
+				AnsiString dir = "records/Contact/";
+				CreateDirectoryA(dir.c_str(),NULL);
+			}
+			if( !DirectoryExists("records/Contact/Osc/") ){
+				AnsiString dir = "records/Contact/Osc/";
+				CreateDirectoryA(dir.c_str(),NULL);
+			}
+			if(!DirectoryExists("records/Contact/Osc/"+ date + "/")){
+				AnsiString dir = "records/Contact/Osc/" + date + "/";
+				CreateDirectoryA(dir.c_str(),NULL);
+			}
+			source = "records/Contact/Osc/" + date + "/" + time + ".afm";
+			break;
+		}
+		case 2:{
+			if( !DirectoryExists("records/NonContact/") ){
+				AnsiString dir = "records/NonContact/";
+				CreateDirectoryA(dir.c_str(),NULL);
+			}
+			if( !DirectoryExists("records/NonContact/Osc/") ){
+				AnsiString dir = "records/NonContact/Osc/";
+				CreateDirectoryA(dir.c_str(),NULL);
+			}
+			if(!DirectoryExists("records/NonContact/Osc/"+ date + "/")){
+				AnsiString dir = "records/NonContact/Osc/" + date + "/";
+				CreateDirectoryA(dir.c_str(),NULL);
+			}
+			source = "records/NonContact/Osc/" + date + "/" + time + ".afm";
+			break;
+		}
+		default:
+			break;
+	}
+
+
+	file = new TFileStream(source,fmCreate);
+	my_rec_queueClass = new rec_queueClass(1000);
+	thread_started = true;
+
+	while(thread_started){
+		if(!(my_rec_queueClass->isEmpty())){
+			DynamicArray<Byte> tmp = my_rec_queueClass->peek();
+			file->WriteData(tmp,tmp.Length);
+			my_rec_queueClass->dequeue();
+		}
+		if(finishing){
+			while(!(my_rec_queueClass->isEmpty())){
+				DynamicArray<Byte> tmp = my_rec_queueClass->peek();
+				file->WriteData(tmp,tmp.Length);
+				my_rec_queueClass->dequeue();
+			}
+			file->Free();
+			delete file;
+			delete[] my_rec_queueClass;
+			thread_started = false;
+			thread_stop = true;
+			this->Terminate();
+
+			return;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void recUnit::StopRecod()
+{
+	finishing = true;
+}
+//---------------------------------------------------------------------------
